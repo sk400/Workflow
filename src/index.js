@@ -1,13 +1,18 @@
+import "@fontsource-variable/josefin-sans";
+import "@fontsource-variable/open-sans";
+import "@fontsource/poppins/600.css";
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 
 import { ChakraProvider } from "@chakra-ui/react";
+import theme from "./lib/theme";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <ChakraProvider>
+  <ChakraProvider theme={theme}>
     <App />
   </ChakraProvider>
 );

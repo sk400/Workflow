@@ -3,21 +3,23 @@ import list from "../assets/list.png";
 import MenuButtonImage from "../assets/Menu-Btn.png";
 import { Avatar, Box, Flex, Heading, HStack } from "@chakra-ui/react";
 
-const Navbar = () => {
+const Navbar = ({ onOpen, btnRef }) => {
   return (
     <Flex
       direction={"row"}
       justifyContent={"space-between"}
       alignItems={"center"}
-      p={5}
       sx={{
         bgColor: "#FFE794",
+        p: { base: 3, md: 5 },
       }}
     >
       <Box
         sx={{
           display: { md: "none" },
         }}
+        ref={btnRef}
+        onClick={onOpen}
       >
         <img
           src={MenuButtonImage}
@@ -38,7 +40,13 @@ const Navbar = () => {
             height: "40px",
           }}
         />
-        <Heading as="h3" size="lg">
+        <Heading
+          as="h3"
+          size="lg"
+          sx={{
+            fontFamily: "josefin",
+          }}
+        >
           YourTodo
         </Heading>
       </HStack>
