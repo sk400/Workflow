@@ -3,7 +3,6 @@ import { Box, Flex, Icon, IconButton, Text } from "@chakra-ui/react";
 import { SlOptionsVertical } from "react-icons/sl";
 
 const Project = ({ name }) => {
-  console.log(name);
   return (
     <Box>
       <Flex
@@ -20,6 +19,7 @@ const Project = ({ name }) => {
           backgroundOpacity: "40%",
           color: "#535151",
           fontWeight: "400",
+          boxShadow: "lg",
         }}
       >
         <Text
@@ -40,6 +40,10 @@ const Project = ({ name }) => {
             "&:hover": {
               bgColor: "#F4D089",
             },
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            console.log("clicked");
           }}
         >
           <Icon as={SlOptionsVertical} />

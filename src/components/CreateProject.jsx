@@ -13,9 +13,10 @@ const CreateProject = () => {
         color: "white",
         borderRadius: "8px",
         cursor: "pointer",
+        boxShadow: "lg",
       }}
     >
-      <Text>New project</Text>
+      <Text sx={{ fontFamily: "josefin" }}>New project</Text>
     </Flex>
   );
 };

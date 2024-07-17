@@ -1,7 +1,22 @@
 import React from "react";
 import list from "../assets/list.png";
 import MenuButtonImage from "../assets/Menu-Btn.png";
-import { Avatar, Box, Flex, Heading, HStack } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Flex,
+  Heading,
+  HStack,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverCloseButton,
+  Button,
+} from "@chakra-ui/react";
+import { PiSignOut } from "react-icons/pi";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
 
 const Navbar = ({ onOpen, btnRef }) => {
   return (
@@ -12,6 +27,11 @@ const Navbar = ({ onOpen, btnRef }) => {
       sx={{
         bgColor: "#FFE794",
         p: { base: 3, md: 5 },
+        position: "sticky",
+        top: 0,
+        left: 0,
+        zIndex: 1,
+        boxShadow: "sm",
       }}
     >
       <Box
@@ -50,7 +70,29 @@ const Navbar = ({ onOpen, btnRef }) => {
           YourTodo
         </Heading>
       </HStack>
-      <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
+      <Popover>
+        <PopoverTrigger>
+          <Avatar
+            name="Dan Abrahmov"
+            src="https://bit.ly/dan-abramov"
+            cursor={"pointer"}
+          />
+        </PopoverTrigger>
+        <PopoverContent>
+          {/* <PopoverArrow /> */}
+          <PopoverCloseButton />
+          {/* <PopoverHeader>Confirmation!</PopoverHeader> */}
+          <PopoverBody>
+            <Button
+              leftIcon={<PiSignOut />}
+              variant="solid"
+              onClick={() => signOut(auth)}
+            >
+              Sign out
+            </Button>
+          </PopoverBody>
+        </PopoverContent>
+      </Popover>
     </Flex>
   );
 };

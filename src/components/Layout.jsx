@@ -9,11 +9,12 @@ const Layout = ({ children }) => {
   const btnRef = React.useRef();
 
   return (
-    <Flex direction={"column"}>
+    <Flex direction={"column"} sx={{ height: "100vh", overflow: "hidden" }}>
       <Navbar onOpen={onOpen} btnRef={btnRef} />
       <Flex
         sx={{
           flex: 1,
+          position: "relative",
         }}
       >
         {/* Sidebar */}
@@ -22,6 +23,8 @@ const Layout = ({ children }) => {
           sx={{
             bgColor: "#FFE1BD",
             width: "100%",
+            height: "90vh",
+            overflow: "auto",
           }}
         >
           {children}

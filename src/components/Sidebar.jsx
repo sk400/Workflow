@@ -10,8 +10,10 @@ import {
 } from "@chakra-ui/react";
 import CreateProject from "./CreateProject";
 import Project from "./Project";
+import { Link, useNavigate } from "react-router-dom";
 
 const Sidebar = ({ isOpen, btnRef, onClose }) => {
+  const navigate = useNavigate();
   return (
     <Box>
       {/* Drawer */}
@@ -53,7 +55,9 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
 
               {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(
                 (item, index) => (
-                  <Project key={index} name={item} />
+                  <Box onClick={() => navigate(`/project/${item}`)} key={index}>
+                    <Project name={item} />
+                  </Box>
                 )
               )}
             </Flex>
@@ -61,21 +65,22 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
         </DrawerContent>
       </Drawer>
 
-      <Box
-        sx={{
-          width: "250px",
-          p: 3,
-          display: {
-            base: "none",
-            md: "flex",
-          },
-          flexDirection: "column",
-          gap: 3,
-          bgColor: "#FFFBEF",
-          height: "88vh",
-        }}
-      >
-        {/* <Heading
+      <Box>
+        <Box
+          sx={{
+            width: "250px",
+            p: 3,
+            display: {
+              base: "none",
+              md: "flex",
+            },
+            flexDirection: "column",
+            gap: 3,
+            bgColor: "#FFFBEF",
+            height: "88vh",
+          }}
+        >
+          {/* <Heading
           sx={{
             fontWeight: "semibold",
             fontSize: "32px",
@@ -87,26 +92,29 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
           Projects
         </Heading> */}
 
-        {/* New project */}
+          {/* New project */}
 
-        <CreateProject />
+          <CreateProject />
 
-        {/* Projects */}
+          {/* Projects */}
 
-        <Flex
-          sx={{
-            flexDirection: "column",
-            gap: 3,
-          }}
-        >
-          {/* Project list */}
+          <Flex
+            sx={{
+              flexDirection: "column",
+              gap: 3,
+            }}
+          >
+            {/* Project list */}
 
-          {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(
-            (item, index) => (
-              <Project key={index} name={item} />
-            )
-          )}
-        </Flex>
+            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(
+              (item, index) => (
+                <Box onClick={() => navigate(`/project/${item}`)} key={index}>
+                  <Project name={item} />
+                </Box>
+              )
+            )}
+          </Flex>
+        </Box>
       </Box>
     </Box>
   );
