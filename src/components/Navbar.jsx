@@ -17,8 +17,11 @@ import {
 import { PiSignOut } from "react-icons/pi";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
+import { useGlobalState } from "../context";
 
 const Navbar = ({ onOpen, btnRef }) => {
+  const { user } = useGlobalState();
+
   return (
     <Flex
       direction={"row"}
@@ -72,11 +75,7 @@ const Navbar = ({ onOpen, btnRef }) => {
       </HStack>
       <Popover>
         <PopoverTrigger>
-          <Avatar
-            name="Dan Abrahmov"
-            src="https://bit.ly/dan-abramov"
-            cursor={"pointer"}
-          />
+          <Avatar name={user?.name} src={user?.photo} cursor={"pointer"} />
         </PopoverTrigger>
         <PopoverContent
           sx={{
