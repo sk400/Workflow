@@ -11,8 +11,8 @@ import {
   PopoverTrigger,
   PopoverContent,
   PopoverBody,
-  PopoverCloseButton,
   Button,
+  PopoverArrow,
 } from "@chakra-ui/react";
 import { PiSignOut } from "react-icons/pi";
 import { signOut } from "firebase/auth";
@@ -78,15 +78,24 @@ const Navbar = ({ onOpen, btnRef }) => {
             cursor={"pointer"}
           />
         </PopoverTrigger>
-        <PopoverContent>
-          {/* <PopoverArrow /> */}
-          <PopoverCloseButton />
-          {/* <PopoverHeader>Confirmation!</PopoverHeader> */}
+        <PopoverContent
+          sx={{
+            width: "150px",
+          }}
+        >
+          <PopoverArrow />
+
           <PopoverBody>
             <Button
               leftIcon={<PiSignOut />}
               variant="solid"
               onClick={() => signOut(auth)}
+              sx={{
+                bgColor: "white",
+                _hover: {
+                  bgColor: "white",
+                },
+              }}
             >
               Sign out
             </Button>

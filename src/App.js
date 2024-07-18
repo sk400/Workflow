@@ -4,17 +4,47 @@ import "./App.css";
 import { FirstProject, Layout, ProjectDetails } from "./components";
 import CreateTodo from "./components/CreateTodo";
 
-import { auth } from "./firebase";
+import { auth, db } from "./firebase";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
+import { useGlobalState } from "./context";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 
 function App() {
   const navigate = useNavigate();
+  const { setUser, setProjects } = useGlobalState();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        setUser({
+          name: user?.displayName,
+          email: user?.email,
+          photo: user?.photoURL,
+          uid: user?.uid,
+        });
         navigate("/");
+
+        const getProjects = () => {
+          const q = query(
+            user && collection(db, "users", user?.email, "projects"),
+            orderBy("createdAt", "desc")
+          );
+          onSnapshot(q, (querySnapshot) => {
+            const documents = querySnapshot?.docs?.map((doc) => ({
+              ...doc?.data(),
+              id: doc?.id,
+            }));
+
+            if (documents?.length) {
+              setProjects(documents);
+            } else {
+              setProjects([]);
+            }
+          });
+        };
+
+        getProjects();
       } else {
         navigate("/sign-up");
       }

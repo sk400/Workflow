@@ -13,16 +13,19 @@ import App from "./App";
 
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "./lib/theme";
+import { Provider } from "./context";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <ChakraProvider theme={theme}>
-    <Router>
-      <Routes>
-        <Route path="/*" element={<App />} />
-        <Route path="/sign-up" element={<Signup />} />
-        <Route path="/sign-in" element={<Signin />} />
-      </Routes>
-    </Router>
+    <Provider>
+      <Router>
+        <Routes>
+          <Route path="/*" element={<App />} />
+          <Route path="/sign-up" element={<Signup />} />
+          <Route path="/sign-in" element={<Signin />} />
+        </Routes>
+      </Router>
+    </Provider>
   </ChakraProvider>
 );

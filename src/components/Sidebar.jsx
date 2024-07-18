@@ -10,10 +10,12 @@ import {
 } from "@chakra-ui/react";
 import CreateProject from "./CreateProject";
 import Project from "./Project";
-import { Link, useNavigate } from "react-router-dom";
+
+import { useGlobalState } from "../context";
 
 const Sidebar = ({ isOpen, btnRef, onClose }) => {
-  const navigate = useNavigate();
+  const { projects } = useGlobalState();
+
   return (
     <Box>
       {/* Drawer */}
@@ -53,13 +55,11 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
             >
               {/* Project list */}
 
-              {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(
-                (item, index) => (
-                  <Box onClick={() => navigate(`/project/${item}`)} key={index}>
-                    <Project name={item} />
-                  </Box>
-                )
-              )}
+              {projects?.map((item) => (
+                <Box key={item?.id}>
+                  <Project item={item} />
+                </Box>
+              ))}
             </Flex>
           </DrawerBody>
         </DrawerContent>
@@ -106,13 +106,11 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
           >
             {/* Project list */}
 
-            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(
-              (item, index) => (
-                <Box onClick={() => navigate(`/project/${item}`)} key={index}>
-                  <Project name={item} />
-                </Box>
-              )
-            )}
+            {projects?.map((item) => (
+              <Box key={item?.id}>
+                <Project item={item} />
+              </Box>
+            ))}
           </Flex>
         </Box>
       </Box>
