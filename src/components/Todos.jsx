@@ -2,7 +2,7 @@ import { Flex, Heading } from "@chakra-ui/react";
 import React from "react";
 import Todo from "./Todo";
 
-const Todos = ({ priority }) => {
+const Todos = ({ priority, todos }) => {
   return (
     <Flex
       direction="column"
@@ -12,9 +12,9 @@ const Todos = ({ priority }) => {
       borderRadius={8}
       p={5}
       gap={3}
-      boxShadow={"lg"}
+      boxShadow={"md"}
     >
-      <Heading as="h4" size="md" mb="5">
+      <Heading as="h4" size="md" mb="5" fontFamily={"josefin"}>
         {priority} Priority Tasks
       </Heading>
       <Flex
@@ -30,9 +30,9 @@ const Todos = ({ priority }) => {
           overflowY: "auto",
         }}
       >
-        <Todo />
-        <Todo />
-        <Todo />
+        {todos?.map((todo) => (
+          <Todo key={todo?.id} todo={todo} />
+        ))}
       </Flex>
     </Flex>
   );

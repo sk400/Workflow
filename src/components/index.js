@@ -8,5 +8,5 @@ export { default as CreateProject } from "./CreateProject";
 export { default as CreateTodo } from "./CreateTodo";
 export { default as Project } from "./Project";
 export { default as ProjectDetails } from "./ProjectDetails";
-export { default as FirstProject } from "./FirstProject";
+export { default as Home } from "./Home";
 export { default as CommonModal } from "./CommonModal";

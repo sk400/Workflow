@@ -10,11 +10,27 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import list from "../assets/list.png";
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../firebase";
 
 const Signup = () => {
+  const navigate = useNavigate();
+
+  const signInWithGoogle = () => {
+    signInWithPopup(auth, provider)
+      .then(() => {
+        console.log("Signed in successfully");
+
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <Flex
       minH={"100vh"}
@@ -59,6 +75,7 @@ const Signup = () => {
                 bg={"white"}
                 leftIcon={<FcGoogle />}
                 boxShadow={"md"}
+                onClick={signInWithGoogle}
               >
                 Sign in with Google
               </Button>

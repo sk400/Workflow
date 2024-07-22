@@ -39,6 +39,7 @@ const CreateProject = () => {
           borderRadius: "8px",
           cursor: "pointer",
           boxShadow: "lg",
+          width: "100%",
         }}
         onClick={onOpen}
       >

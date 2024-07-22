@@ -135,7 +135,14 @@ const Project = ({ item }) => {
               <Button colorScheme="blue" mr={3} onClick={onClose}>
                 Close
               </Button>
-              <Button variant="red" onClick={deleteProject}>
+              <Button
+                variant="red"
+                onClick={() => {
+                  navigate("/");
+                  deleteProject();
+                  onClose();
+                }}
+              >
                 Delete
               </Button>
             </ModalFooter>

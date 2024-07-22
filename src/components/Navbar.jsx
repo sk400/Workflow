@@ -18,9 +18,11 @@ import { PiSignOut } from "react-icons/pi";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { useGlobalState } from "../context";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = ({ onOpen, btnRef }) => {
   const { user } = useGlobalState();
+  const navigate = useNavigate();
 
   return (
     <Flex
@@ -54,7 +56,7 @@ const Navbar = ({ onOpen, btnRef }) => {
           }}
         />
       </Box>
-      <HStack>
+      <HStack onClick={() => navigate("/")} cursor={"pointer"}>
         <img
           src={list}
           alt="List Icon"
@@ -70,7 +72,7 @@ const Navbar = ({ onOpen, btnRef }) => {
             fontFamily: "josefin",
           }}
         >
-          YourTodo
+          Planner
         </Heading>
       </HStack>
       <Popover>

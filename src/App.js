@@ -1,8 +1,7 @@
-import { Box, Center, Flex, Heading } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
-import { FirstProject, Layout, ProjectDetails } from "./components";
-import CreateTodo from "./components/CreateTodo";
+import { Home, Layout, ProjectDetails } from "./components";
 
 import { auth, db } from "./firebase";
 import { useEffect } from "react";
@@ -23,14 +22,25 @@ function App() {
           photo: user?.photoURL,
           uid: user?.uid,
         });
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            name: user?.displayName,
+            email: user?.email,
+            photo: user?.photoURL,
+            uid: user?.uid,
+          })
+        );
         navigate("/");
 
+        const projectQuery = query(
+          user && collection(db, "users", user?.email, "projects"),
+          orderBy("createdAt", "desc")
+        );
+
         const getProjects = () => {
-          const q = query(
-            user && collection(db, "users", user?.email, "projects"),
-            orderBy("createdAt", "desc")
-          );
-          onSnapshot(q, (querySnapshot) => {
+          onSnapshot(projectQuery, (querySnapshot) => {
             const documents = querySnapshot?.docs?.map((doc) => ({
               ...doc?.data(),
               id: doc?.id,
@@ -46,6 +56,7 @@ function App() {
 
         getProjects();
       } else {
+        localStorage.removeItem("user");
         navigate("/sign-up");
       }
     });
@@ -54,37 +65,10 @@ function App() {
   return (
     <Layout>
       <Box>
-        <Center>
-          <Heading
-            sx={{
-              fontWeight: "semibold",
-              fontSize: "32px",
-              textAlign: "center",
-              fontFamily: "open",
-              my: 5,
-            }}
-          >
-            Monday
-          </Heading>
-        </Center>
-        <Flex
-          direction="column"
-          align="center"
-          width="100%"
-          gap={5}
-          my={10}
-          // mb={20}
-        >
-          {/* Create new item */}
-          <CreateTodo />
-
-          {/* Routes */}
-
-          <Routes>
-            <Route path="/" element={<FirstProject />} />
-            <Route path="/project/:projectId" element={<ProjectDetails />} />
-          </Routes>
-        </Flex>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/project/:projectId" element={<ProjectDetails />} />
+        </Routes>
       </Box>
     </Layout>
   );
