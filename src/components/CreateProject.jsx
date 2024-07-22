@@ -7,17 +7,17 @@ import CommonModal from "./CommonModal";
 
 const CreateProject = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [projectName, setProjectName] = useState("");
+  const [projectInfo, setProjectInfo] = useState({ name: "", description: "" });
   const { user } = useGlobalState();
 
   const createProjectOnFirestore = async () => {
-    if (!projectName?.length) {
-      alert("Project name cannot be empty");
+    if (!projectInfo?.name?.length || !projectInfo?.description?.length) {
+      alert("Project name or description cannot be empty");
       return;
     }
     try {
       await addDoc(collection(db, "users", user?.email, "projects"), {
-        name: projectName,
+        ...projectInfo,
         createdAt: serverTimestamp(),
       });
       console.log("Project created successfully");
@@ -50,7 +50,8 @@ const CreateProject = () => {
         isOpen={isOpen}
         onClose={onClose}
         name="Create"
-        setterFunction={setProjectName}
+        item={projectInfo}
+        setterFunction={setProjectInfo}
         actionButton={createProjectOnFirestore}
       />
     </>

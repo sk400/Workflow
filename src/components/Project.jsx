@@ -28,7 +28,7 @@ import CommonModal from "./CommonModal";
 const Project = ({ item }) => {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [newProjectName, setNewProjectName] = useState("");
+  const [projectInfo, setProjectInfo] = useState(item);
   const {
     isOpen: isOpen1,
     onOpen: onOpen1,
@@ -47,14 +47,8 @@ const Project = ({ item }) => {
 
   const renameProject = async () => {
     try {
-      if (!newProjectName?.length) {
-        // alert("New project name cannot be empty");
-        return;
-      }
-
       const projectRef = doc(db, "users", user?.email, "projects", item?.id);
-      const updatedData = { name: newProjectName };
-      await updateDoc(projectRef, updatedData);
+      await updateDoc(projectRef, projectInfo);
       console.log("Project updated successfully");
     } catch (error) {
       console.error("Error updating project: ", error);
@@ -111,7 +105,7 @@ const Project = ({ item }) => {
             <Icon as={SlOptionsVertical} />
           </MenuButton>
           <MenuList>
-            <MenuItem onClick={onOpen1}>Rename</MenuItem>
+            <MenuItem onClick={onOpen1}>Edit</MenuItem>
             <MenuItem
               onClick={() => {
                 onOpen();
@@ -153,7 +147,8 @@ const Project = ({ item }) => {
           isOpen={isOpen1}
           onClose={onClose1}
           name="Save"
-          setterFunction={setNewProjectName}
+          item={item}
+          setterFunction={setProjectInfo}
           actionButton={renameProject}
         />
       </Flex>

@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 
 import { useGetRealtimeTasks } from "../lib/customHooks";
 import Todos from "./Todos";
+import Loading from "./Loading";
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
@@ -18,7 +19,7 @@ const ProjectDetails = () => {
 
   const currentProject = projects?.find((project) => project?.id === projectId);
 
-  if (loading) return "Loading....";
+  if (loading) return <Loading />;
 
   const highPriorityTasks = data?.filter((task) => task?.priority === "high");
   const mediumPriorityTasks = data?.filter(
@@ -51,25 +52,27 @@ const ProjectDetails = () => {
       >
         {/* Create new item */}
         <CreateTodo />
-
-        {/* Routes */}
       </Flex>
       {/* High Priority items */}
 
       {highPriorityTasks?.length !== 0 && (
-        <Todos priority="High" todos={highPriorityTasks} />
+        <Todos priority="High" bgColor="#FAA136" todos={highPriorityTasks} />
       )}
 
       {/* Medium Priority items */}
 
       {mediumPriorityTasks?.length !== 0 && (
-        <Todos priority="Medium" todos={mediumPriorityTasks} />
+        <Todos
+          priority="Medium"
+          bgColor="#FFB760"
+          todos={mediumPriorityTasks}
+        />
       )}
 
       {/* Low Priority items */}
 
       {lowPriorityTasks?.length !== 0 && (
-        <Todos priority="Low" todos={lowPriorityTasks} />
+        <Todos priority="Low" bgColor="#FFD8A9" todos={lowPriorityTasks} />
       )}
     </Flex>
   );

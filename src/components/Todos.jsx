@@ -2,13 +2,13 @@ import { Flex, Heading } from "@chakra-ui/react";
 import React from "react";
 import Todo from "./Todo";
 
-const Todos = ({ priority, todos }) => {
+const Todos = ({ priority, todos, bgColor }) => {
   return (
     <Flex
       direction="column"
       align="center"
       width="95%"
-      bgColor="#FAA136"
+      bgColor={bgColor}
       borderRadius={8}
       p={5}
       gap={3}
@@ -23,7 +23,6 @@ const Todos = ({ priority, todos }) => {
           gap: 3,
           p: 3,
           width: "100%",
-          // alignItems: "center",
           bgColor: "#FEFFDF",
           borderRadius: "8px",
           maxHeight: "250px",

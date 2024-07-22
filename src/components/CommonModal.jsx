@@ -5,16 +5,25 @@ import {
   Modal,
   ModalContent,
   ModalOverlay,
+  Textarea,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 
 const CommonModal = ({
   isOpen,
   onClose,
   name,
+  item,
   setterFunction,
   actionButton,
 }) => {
+  const handleChange = (e) => {
+    setterFunction({
+      ...item,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   return (
     <Box>
       <Modal isOpen={isOpen} onClose={onClose} size="xs">
@@ -27,8 +36,21 @@ const CommonModal = ({
         >
           <Input
             variant="filled"
+            name="name"
+            autoComplete="off"
             placeholder="Project name"
-            onChange={(e) => setterFunction(e.target.value)}
+            value={item?.name}
+            onChange={handleChange}
+          />
+          <Textarea
+            name="description"
+            placeholder="Item description"
+            rows={6}
+            resize="none"
+            autoComplete="off"
+            variant="filled"
+            value={item?.description}
+            onChange={handleChange}
           />
           <Button
             colorScheme="orange"
@@ -46,3 +68,7 @@ const CommonModal = ({
 };
 
 export default CommonModal;
+
+// ui update
+// create project function
+// edit project function

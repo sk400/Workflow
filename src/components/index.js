@@ -10,3 +10,4 @@ export { default as Project } from "./Project";
 export { default as ProjectDetails } from "./ProjectDetails";
 export { default as Home } from "./Home";
 export { default as CommonModal } from "./CommonModal";
+export { default as Loading } from "./Loading";
