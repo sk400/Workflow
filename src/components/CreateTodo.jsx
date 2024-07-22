@@ -31,35 +31,44 @@ const CreateTodo = () => {
   const { projectId } = useParams();
   const toast = useToast();
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setData({ ...data, [e.target.name]: e.target.value });
-  };
-
   // Add a document to firestore
 
+  // Function to add a new todo to Firestore
   const addTodo = async () => {
+    // Check if all the required fields are filled
+    if (!data?.name || !data?.priority || !data?.description || !data?.date) {
+      // If any of the fields is empty, show an error toast
+      toast({
+        title: "Error",
+        description: "Please fill all the fields while creating a new task",
+        status: "error",
+        duration: 9000, // Duration of the toast in milliseconds
+        isClosable: true, // Whether the toast can be closed or not
+        position: "top", // Position of the toast on the screen
+      });
+      // Return early to stop the function execution
+      return;
+    }
+
     try {
-      if (data?.name && data?.priority && data?.description && data?.date) {
-        const docRef = await addDoc(
-          collection(db, "users", user?.email, "projects", projectId, "tasks"),
-          {
-            ...data,
-            done: false,
-            createdAt: serverTimestamp(),
-          }
-        );
-        console.log("Document written with ID: ", docRef.id);
-      } else {
-        toast({
-          title: "Error",
-          description: "Please fill all the fields while creating a new task",
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-          position: "top",
-        });
-      }
+      // Add a new document to the "tasks" collection under the current project
+      const docRef = await addDoc(
+        collection(db, "users", user?.email, "projects", projectId, "tasks"),
+        {
+          // Spread the data object into the document fields
+          ...data,
+          // Set the "done" field to false as the task is not completed initially
+          done: false,
+          // Add a "createdAt" field with the current timestamp
+          createdAt: serverTimestamp(),
+        }
+      );
+      // Log the ID of the newly created document to the console
+      console.log("Document written with ID: ", docRef.id);
     } catch (error) {
+      // Log any errors that occur while adding the document to the console
       console.error("Error adding document: ", error);
     }
   };

@@ -36,21 +36,55 @@ const Project = ({ item }) => {
   } = useDisclosure();
   const { user } = useGlobalState();
 
+  /**
+   * Deletes a project from the Firestore database.
+   * This function is called when the user clicks the "Delete" button in the project menu.
+   * It first checks if the user is logged in, and if so, it deletes the project from the "projects" collection in the Firestore database.
+   * If the user is not logged in, it logs an error message to the console.
+   * If there is an error when deleting the project, it logs the error message to the console.
+   */
   const deleteProject = async () => {
     try {
+      // Check if the user is logged in
+      if (!user) {
+        console.error("You must be logged in to delete a project");
+        return;
+      }
+
+      // Delete the project from the Firestore database
       await deleteDoc(doc(db, "users", user?.email, "projects", item?.id));
       console.log("Project deleted successfully");
     } catch (error) {
+      // Log any errors that occur during the deletion of the project
       console.error("Error deleting project: ", error);
     }
   };
 
+  /**
+   * Updates a project in the Firestore database.
+   * This function is called when the user clicks the "Save" button in the rename project modal.
+   * It first checks if the user is logged in, and if so, it updates the project in the "projects" collection of the Firestore database.
+   * If the user is not logged in, it logs an error message to the console.
+   * If there is an error when updating the project, it logs the error message to the console.
+   */
   const renameProject = async () => {
     try {
+      // Check if the user is logged in
+      if (!user) {
+        console.error("You must be logged in to update a project");
+        return;
+      }
+
+      // Get a reference to the project document that needs to be updated
       const projectRef = doc(db, "users", user?.email, "projects", item?.id);
+
+      // Update the project in the Firestore database
       await updateDoc(projectRef, projectInfo);
+
+      // Log a success message to the console if the project was updated successfully
       console.log("Project updated successfully");
     } catch (error) {
+      // Log any errors that occur during the updating of the project
       console.error("Error updating project: ", error);
     }
   };

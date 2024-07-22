@@ -3,10 +3,6 @@ import { Box, Flex, useDisclosure } from "@chakra-ui/react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import React from "react";
-import { useCollection } from "react-firebase-hooks/firestore";
-import { useGlobalState } from "../context";
-import { collection } from "firebase/firestore";
-import { db } from "../firebase";
 
 const Layout = ({ children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();

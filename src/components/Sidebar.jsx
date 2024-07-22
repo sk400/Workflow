@@ -80,18 +80,6 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
             height: "88vh",
           }}
         >
-          {/* <Heading
-          sx={{
-            fontWeight: "semibold",
-            fontSize: "32px",
-            textAlign: "center",
-            fontFamily: "poppins",
-            my: 5,
-          }}
-        >
-          Projects
-        </Heading> */}
-
           {/* New project */}
 
           <CreateProject />

@@ -24,7 +24,6 @@ import {
   Select,
   Input,
   Box,
-  useToast,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useGlobalState } from "../context";

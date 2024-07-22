@@ -7,7 +7,6 @@ import {
   ModalOverlay,
   Textarea,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
 
 const CommonModal = ({
   isOpen,
@@ -17,7 +16,16 @@ const CommonModal = ({
   setterFunction,
   actionButton,
 }) => {
+  /**
+   * Handles the change event of the input fields in the modal.
+   * Updates the state of the item using the setterFunction.
+   *
+   * @param {Object} e - The event object.
+   * @return {void}
+   */
   const handleChange = (e) => {
+    // Create a new object with the current item and update the value of the field
+    // specified by the event target's name with the event target's value.
     setterFunction({
       ...item,
       [e.target.name]: e.target.value,
@@ -68,7 +76,3 @@ const CommonModal = ({
 };
 
 export default CommonModal;
-
-// ui update
-// create project function
-// edit project function
