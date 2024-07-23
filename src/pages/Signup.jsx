@@ -65,7 +65,7 @@ const Signup = () => {
                   fontFamily: "josefin",
                 }}
               >
-                YourTodo
+                Planner
               </Heading>
             </HStack>
             {/* Google sign up button */}
