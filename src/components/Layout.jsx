@@ -21,13 +21,13 @@ const Layout = ({ children }) => {
         <Sidebar isOpen={isOpen} onClose={onClose} btnRef={btnRef} />
         <Box
           sx={{
-            bgColor: "#FFE1BD",
+            bgColor: "#17181F",
             width: "100%",
             height: "90vh",
             overflow: "auto",
           }}
         >
-          {children}
+          {/* {children} */}
         </Box>
       </Flex>
     </Flex>
