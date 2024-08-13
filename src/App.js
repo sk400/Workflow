@@ -69,7 +69,7 @@ function App() {
       <Box>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/project/:projectId" element={<ProjectDetails />} />
+          <Route path="/projects/:projectId" element={<ProjectDetails />} />
         </Routes>
       </Box>
     </Layout>

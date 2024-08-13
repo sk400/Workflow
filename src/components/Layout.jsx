@@ -10,7 +10,6 @@ const Layout = ({ children }) => {
 
   return (
     <Flex direction={"column"} sx={{ height: "100vh", overflow: "hidden" }}>
-      <Navbar onOpen={onOpen} btnRef={btnRef} />
       <Flex
         sx={{
           flex: 1,
@@ -23,10 +22,11 @@ const Layout = ({ children }) => {
           sx={{
             bgColor: "#17181F",
             width: "100%",
-            height: "90vh",
+            height: "100vh",
             overflow: "auto",
           }}
         >
+          <Navbar onOpen={onOpen} btnRef={btnRef} />
           {/* {children} */}
         </Box>
       </Flex>
