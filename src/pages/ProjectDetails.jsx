@@ -1,13 +1,13 @@
 import { Center, Flex, Heading } from "@chakra-ui/react";
 
-import CreateTodo from "./CreateTodo";
-
 import { useGlobalState } from "../context";
 import { useParams } from "react-router-dom";
 
 import { useGetRealtimeTasks } from "../lib/customHooks";
-import Todos from "./Todos";
-import Loading from "./Loading";
+import Todos from "../features/tasks/Todos";
+import CreateTodo from "../features/tasks/CreateTodo";
+
+import { Loading } from "../components";
 
 const ProjectDetails = () => {
   const { projectId } = useParams();

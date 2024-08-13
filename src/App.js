@@ -1,7 +1,9 @@
 import { Box } from "@chakra-ui/react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
-import { Home, Layout, ProjectDetails } from "./components";
+import { Layout } from "./components";
+
+import { Home, ProjectDetails } from "./pages";
 
 import { auth, db } from "./firebase";
 import { useEffect } from "react";

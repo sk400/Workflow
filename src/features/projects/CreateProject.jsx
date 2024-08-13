@@ -1,9 +1,9 @@
 import { Flex, Text, useDisclosure } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { useGlobalState } from "../context";
+import { useGlobalState } from "../../context";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebase";
-import CommonModal from "./CommonModal";
+import { db } from "../../firebase";
+import { CommonModal } from "../../components";
 
 const CreateProject = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

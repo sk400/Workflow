@@ -26,9 +26,9 @@ import {
   Box,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { useGlobalState } from "../context";
+import { useGlobalState } from "../../context";
 import { useParams } from "react-router-dom";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import {
   MdDelete,

@@ -17,9 +17,9 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { useGlobalState } from "../context";
+import { useGlobalState } from "../../context";
 import { useParams } from "react-router-dom";
 
 const CreateTodo = () => {

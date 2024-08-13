@@ -8,8 +8,9 @@ import {
   DrawerCloseButton,
   Flex,
 } from "@chakra-ui/react";
-import CreateProject from "./CreateProject";
-import Project from "./Project";
+
+import CreateProject from "../features/projects/CreateProject";
+import Project from "../features/projects/Project";
 
 import { useGlobalState } from "../context";
 

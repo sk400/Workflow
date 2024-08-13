@@ -21,9 +21,9 @@ import {
 import { SlOptionsVertical } from "react-icons/sl";
 import { useNavigate } from "react-router-dom";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase";
-import { useGlobalState } from "../context";
-import CommonModal from "./CommonModal";
+import { db } from "../../firebase";
+import { useGlobalState } from "../../context";
+import { CommonModal } from "../../components";
 
 const Project = ({ item }) => {
   const navigate = useNavigate();
