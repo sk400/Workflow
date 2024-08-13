@@ -3,18 +3,17 @@ import {
   Flex,
   Box,
   HStack,
-  Stack,
   Button,
   Heading,
   Text,
-  useColorModeValue,
+  Input,
 } from "@chakra-ui/react";
 
 import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-import list from "../assets/list.png";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../firebase";
+import AuthNavbar from "../features/auth/components/AuthNavbar";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -32,66 +31,120 @@ const Signup = () => {
   };
 
   return (
-    <Flex
-      minH={"100vh"}
-      align={"center"}
-      justify={"center"}
-      bg={useColorModeValue("gray.50", "gray.800")}
-      position={"relative"}
+    <Box
+      sx={{
+        minH: "100vh",
+        width: "100%",
+        bgColor: "#17181E",
+      }}
     >
-      <Stack spacing={10} mx={"auto"} maxW={"lg"} px={6}>
-        <Box
-          rounded={"lg"}
-          bg={useColorModeValue("white", "gray.700")}
-          boxShadow={"lg"}
-          p={8}
+      <AuthNavbar />
+
+      <Flex
+        sx={{
+          justifyContent: "center",
+          alignItems: "center",
+          mt: {
+            base: 4,
+            sm: 5,
+            md: 10,
+          },
+        }}
+      >
+        <Flex
+          maxW={["300px", "300px", "350px"]}
+          width={"100%"}
+          alignItems={"center"}
+          direction="column"
+          color="gray.50"
+          gap={[8, 8, 10]}
+          p={[6, 0]}
         >
-          <Stack spacing={10} align={"center"}>
-            {/* Logo */}
-            <HStack>
-              <img
-                src={list}
-                alt="List Icon"
-                style={{
-                  width: "60px",
-                  height: "60px",
-                }}
+          <Heading size="xl">Log in</Heading>
+          {/* Sign up form */}
+          <Flex direction="column" gap={4} alignItems={"center"} width="100%">
+            <Flex direction="column" width="100%" gap={4}>
+              <Input
+                name="email"
+                type="email"
+                placeholder="Email"
+                variant="outline"
+                size="sm"
+                bgColor="#17181E"
+                focusBorderColor="#17181E"
+                autoComplete="off"
+                borderRadius="18px"
               />
-              <Heading
-                as="h3"
-                size="lg"
-                sx={{
-                  fontFamily: "josefin",
-                }}
-              >
-                Planner
-              </Heading>
-            </HStack>
-            {/* Google sign up button */}
-            <Stack spacing={4} pt={2}>
+              <Input
+                name="password"
+                type="password"
+                placeholder="Password"
+                variant="outline"
+                size="sm"
+                bgColor="#17181E"
+                focusBorderColor="#17181E"
+                autoComplete="off"
+                borderRadius="18px"
+              />
+            </Flex>
+            <Text>or</Text>
+            <Flex direction="column" width="100%">
               <Button
-                loadingText="Submitting"
-                size="lg"
-                bg={"white"}
+                size="sm"
+                bg="#17181E"
                 leftIcon={<FcGoogle />}
                 boxShadow={"md"}
-                onClick={signInWithGoogle}
+                variant="outline"
+                onClick={() => signInWithGoogle()}
+                color="gray.50"
+                sx={{
+                  borderRadius: "18px",
+                  _hover: {
+                    bgColor: "#17181E",
+                    opacity: 0.8,
+                  },
+                }}
               >
-                Sign in with Google
+                Log in with Google
               </Button>
-              <Stack>
-                <Text align={"center"}>
-                  Create account{" "}
-                  <Link to="/sign-up" style={{ color: "#0BC5EA" }}>
-                    Sign up
-                  </Link>
-                </Text>
-              </Stack>
-            </Stack>
-          </Stack>
-        </Box>
-      </Stack>
-    </Flex>
+            </Flex>
+          </Flex>
+          <Button
+            size="md"
+            bg="#17181E"
+            boxShadow={"md"}
+            variant="filled"
+            bgColor="#3772FF"
+            width="100%"
+            color="gray.50"
+            sx={{
+              borderRadius: "13px",
+              _hover: {
+                bgColor: "#3772FF",
+                opacity: 0.8,
+              },
+            }}
+          >
+            Log in
+          </Button>
+          <Flex direction="column" width="100%" alignItems={"center"} gap={2}>
+            <HStack>
+              <Text>Don't have an account?</Text>
+              <Link
+                to="/sign-up"
+                style={{
+                  color: "#F7FAFC",
+                  fontWeight: "bold",
+                }}
+              >
+                Create account
+              </Link>
+            </HStack>
+            <Text fontWeight="bold">Forgot password?</Text>
+          </Flex>
+        </Flex>
+      </Flex>
+    </Box>
   );
 };
 
