@@ -17,6 +17,10 @@ import {
   ModalCloseButton,
   useDisclosure,
   Button,
+  Card,
+  CardHeader,
+  Heading,
+  CardBody,
 } from "@chakra-ui/react";
 import { SlOptionsVertical } from "react-icons/sl";
 import { useNavigate } from "react-router-dom";
@@ -24,41 +28,14 @@ import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useGlobalState } from "../../context";
 import { CommonModal } from "../../components";
+import { IoMdMore } from "react-icons/io";
 
 const Project = ({ item }) => {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [projectInfo, setProjectInfo] = useState(item);
-  const {
-    isOpen: isOpen1,
-    onOpen: onOpen1,
-    onClose: onClose1,
-  } = useDisclosure();
+
   const { user } = useGlobalState();
-
-  /**
-   * Deletes a project from the Firestore database.
-   * This function is called when the user clicks the "Delete" button in the project menu.
-   * It first checks if the user is logged in, and if so, it deletes the project from the "projects" collection in the Firestore database.
-   * If the user is not logged in, it logs an error message to the console.
-   * If there is an error when deleting the project, it logs the error message to the console.
-   */
-  const deleteProject = async () => {
-    try {
-      // Check if the user is logged in
-      if (!user) {
-        console.error("You must be logged in to delete a project");
-        return;
-      }
-
-      // Delete the project from the Firestore database
-      await deleteDoc(doc(db, "users", user?.email, "projects", item?.id));
-      console.log("Project deleted successfully");
-    } catch (error) {
-      // Log any errors that occur during the deletion of the project
-      console.error("Error deleting project: ", error);
-    }
-  };
 
   /**
    * Updates a project in the Firestore database.
@@ -67,7 +44,7 @@ const Project = ({ item }) => {
    * If the user is not logged in, it logs an error message to the console.
    * If there is an error when updating the project, it logs the error message to the console.
    */
-  const renameProject = async () => {
+  const updateProject = async (data) => {
     try {
       // Check if the user is logged in
       if (!user) {
@@ -79,7 +56,7 @@ const Project = ({ item }) => {
       const projectRef = doc(db, "users", user?.email, "projects", item?.id);
 
       // Update the project in the Firestore database
-      await updateDoc(projectRef, projectInfo);
+      await updateDoc(projectRef, data || projectInfo);
 
       // Log a success message to the console if the project was updated successfully
       console.log("Project updated successfully");
@@ -90,103 +67,108 @@ const Project = ({ item }) => {
   };
 
   return (
-    <Box>
-      <Flex
-        direction="row"
-        alignItems={"center"}
-        justifyContent={"space-between"}
+    <>
+      <Card
+        key={item?.id}
+        shadow="md"
         sx={{
-          px: 3,
-          py: 1,
-          bgColor: "#F4D089",
-
-          borderRadius: "8px",
+          bgColor: "#272A30",
+          color: "gray.50",
+          borderRight: "3px solid",
+          borderRightColor: "#7259C6",
           cursor: "pointer",
-          backgroundOpacity: "40%",
-          color: "#535151",
-          fontWeight: "400",
-          boxShadow: "lg",
         }}
+        onClick={() => navigate(`/projects/${item?.id}`)}
       >
-        <Text
-          sx={{
-            fontFamily: "josefin",
-            fontWeight: "500",
-            textAlign: "center",
-            flexBasis: "95%",
-            ml: 4,
-          }}
-          onClick={() => navigate(`/project/${item?.id}`)}
-        >
-          {item?.name}
-        </Text>
-
-        <Menu>
-          <MenuButton
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-            as={IconButton}
+        <CardHeader>
+          <Heading
+            size="sm"
             sx={{
-              bgColor: "#F4D089",
-              flexBasis: "5%",
-              "&:hover": {
-                bgColor: "#F4D089",
-              },
               fontFamily: "josefin",
             }}
           >
-            <Icon as={SlOptionsVertical} />
-          </MenuButton>
-          <MenuList>
-            <MenuItem onClick={onOpen1}>Edit</MenuItem>
-            <MenuItem
-              onClick={() => {
-                onOpen();
+            {item?.name}
+          </Heading>
+        </CardHeader>
+        <CardBody>
+          <Text
+            sx={{
+              fontFamily: "josefin",
+            }}
+          >
+            {item?.description}
+          </Text>
+          <Menu>
+            <MenuButton
+              sx={{
+                bgColor: "#272A30",
+                color: "gray.50",
+                position: "absolute",
+                bottom: 1,
+                right: 1,
+                _hover: {
+                  bgColor: "#272A30",
+                },
+                borderRadius: "lg",
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
               }}
             >
-              Delete
-            </MenuItem>
-          </MenuList>
-        </Menu>
-
-        {/* Delete modal */}
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalCloseButton />
-            <ModalBody>
-              Are you sure you want to delete this project?{" "}
-            </ModalBody>
-
-            <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={onClose}>
-                Close
-              </Button>
-              <Button
-                variant="red"
-                onClick={() => {
-                  navigate("/");
-                  deleteProject();
-                  onClose();
+              <Icon as={IoMdMore} />
+            </MenuButton>
+            <MenuList
+              sx={{
+                bgColor: "#272A30",
+                border: "none",
+              }}
+            >
+              <MenuItem
+                sx={{
+                  color: "gray.50",
+                  bgColor: "#272A30",
+                  _hover: {
+                    bgColor: "#7259C6",
+                  },
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpen();
                 }}
               >
-                Delete
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+                Edit
+              </MenuItem>
+              <MenuItem
+                sx={{
+                  color: "gray.50",
+                  bgColor: "#272A30",
+                  _hover: {
+                    bgColor: "#7259C6",
+                  },
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updateProject({
+                    isDeleted: item?.isDeleted === true ? false : true,
+                  });
+                }}
+              >
+                {item?.isDeleted === true ? "Restore" : "Move to bin"}
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        </CardBody>
+      </Card>
 
-        <CommonModal
-          isOpen={isOpen1}
-          onClose={onClose1}
-          name="Save"
-          item={item}
-          setterFunction={setProjectInfo}
-          actionButton={renameProject}
-        />
-      </Flex>
-    </Box>
+      <CommonModal
+        isOpen={isOpen}
+        onClose={onClose}
+        name="Save"
+        item={projectInfo}
+        setterFunction={setProjectInfo}
+        actionFunction={updateProject}
+      />
+    </>
   );
 };
 

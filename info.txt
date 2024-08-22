@@ -1,0 +1,87 @@
+Features
+---------
+1. CRUD on todos
+2. Authentication to secure your todos
+3. Todos by projects
+4. Bin for deleted todos
+
+
+
+
+
+
+
+
+
+Add a favicon
+
+
+
+
+
+
+Add to fiverr
+Add to linkedin featured section
+Add to portfolio
+Share on linkedin
+
+
+
+
+
+
+Next level Features
+--------------------
+- hide navbar on scroll
+- notfound page
+- Archived projects
+- Drag and drop the project cards between priority columns
+- Error boundary
+
+
+
+Update
+--------------------
+
+- project details page
+- CRUD on tasks
+- labels page
+- CRUD on labels and filteration
+
+- bin 
+
+
+
+
+- Email and password authentication with forgot password 
+- Drag and drop
+
+
+
+
+
+Completed
+--------------------
+
+- Find a good name and logo
+- Build login page
+- Organise files and folders
+
+- Layout
+
+   - navbar
+   - sidebar
+   - Drawer
+   - layout fix (sidebar and navbar)
+
+
+- projects page
+
+- CRUD on projects
+
+  - create
+  = Update
+  - Add project to bin
+
+
+- errors in console

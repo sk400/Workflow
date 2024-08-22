@@ -21,6 +21,7 @@ import logo from "../assets/workflow-logo.png";
 import { IoMenuOutline } from "react-icons/io5";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import Searchbar from "./Searchbar";
+import CreateProject from "../features/projects/CreateProject";
 
 const Navbar = ({ onOpen, btnRef }) => {
   const { user } = useGlobalState();
@@ -62,18 +63,7 @@ const Navbar = ({ onOpen, btnRef }) => {
 
       <HStack alignItems="center" spacing={5}>
         {/* Create project */}
-        <IconButton
-          sx={{
-            bgColor: "#17181F",
-            color: "gray.50",
-            display: { base: "none", md: "block" },
-            _hover: {
-              bgColor: "#17181F",
-            },
-          }}
-        >
-          <Icon as={IoMdAddCircleOutline} w={[7, 9]} h={[7, 9]} />
-        </IconButton>
+        <CreateProject />
         {/* menu button (small screen) */}
         <IconButton
           sx={{

@@ -27,7 +27,7 @@ const Layout = ({ children }) => {
           }}
         >
           <Navbar onOpen={onOpen} btnRef={btnRef} />
-          {/* {children} */}
+          {children}
         </Box>
       </Flex>
     </Flex>

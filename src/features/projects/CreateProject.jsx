@@ -1,11 +1,13 @@
-import { Flex, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Icon, IconButton, Image, useDisclosure } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useGlobalState } from "../../context";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase";
 import { CommonModal } from "../../components";
+import addProject from "../../assets/add-project.png";
+import { IoMdAddCircleOutline } from "react-icons/io";
 
-const CreateProject = () => {
+const CreateProject = ({ sidebar }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [projectInfo, setProjectInfo] = useState({ name: "", description: "" });
   const { user } = useGlobalState();
@@ -32,36 +34,48 @@ const CreateProject = () => {
       await addDoc(collection(db, "users", user?.email, "projects"), {
         // Spread the project information into the Firestore document
         ...projectInfo,
+        isDeleted: false,
         // Add the current timestamp to the createdAt field of the document
         createdAt: serverTimestamp(),
       });
       // Log a success message to the console
       console.log("Project created successfully");
+      setProjectInfo({ name: "", description: "" });
     } catch (error) {
       // Log any errors that occur during the creation of the project to the console
       console.log(error);
+      setProjectInfo({ name: "", description: "" });
     }
   };
 
   return (
     <>
-      <Flex
-        direction="row"
-        alignItems={"center"}
-        justifyContent={"center"}
-        sx={{
-          p: 3,
-          bgColor: "#D1C69E",
-          color: "white",
-          borderRadius: "8px",
-          cursor: "pointer",
-          boxShadow: "lg",
-          width: "100%",
-        }}
-        onClick={onOpen}
-      >
-        <Text sx={{ fontFamily: "josefin" }}>New project</Text>
-      </Flex>
+      {sidebar ? (
+        <Image
+          src={addProject}
+          objectFit={"cover"}
+          sx={{
+            width: "24px",
+            height: "24px",
+            cursor: "pointer",
+          }}
+          onClick={onOpen}
+        />
+      ) : (
+        <IconButton
+          sx={{
+            bgColor: "#17181F",
+            color: "gray.50",
+            display: { base: "none", md: "block" },
+            _hover: {
+              bgColor: "#17181F",
+            },
+          }}
+          onClick={onOpen}
+        >
+          <Icon as={IoMdAddCircleOutline} w={[7, 9]} h={[7, 9]} />
+        </IconButton>
+      )}
 
       <CommonModal
         isOpen={isOpen}
@@ -69,7 +83,7 @@ const CreateProject = () => {
         name="Create"
         item={projectInfo}
         setterFunction={setProjectInfo}
-        actionButton={createProjectOnFirestore}
+        actionFunction={createProjectOnFirestore}
       />
     </>
   );

@@ -5,7 +5,6 @@ import {
   DrawerHeader,
   DrawerOverlay,
   DrawerContent,
-  DrawerCloseButton,
   Flex,
   ListItem,
   ListIcon,
@@ -13,6 +12,7 @@ import {
   List,
   Text,
   Image,
+  Spacer,
 } from "@chakra-ui/react";
 
 import CreateProject from "../features/projects/CreateProject";
@@ -26,15 +26,15 @@ import { GoProjectRoadmap } from "react-icons/go";
 import logo from "../assets/workflow-logo.png";
 
 const sidebarItemsData = [
-  {
-    title: "Home",
-    icon: MdHome,
-    path: "/",
-  },
+  // {
+  //   title: "Home",
+  //   icon: MdHome,
+  //   path: "/",
+  // },
   {
     title: "Projects",
     icon: FaTasks,
-    path: "/projects",
+    path: "/",
   },
   {
     title: "Labels",
@@ -52,7 +52,10 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
   const { projects } = useGlobalState();
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  console.log(projects);
+
+  const filteredProjects = projects?.filter(
+    (project) => project?.isDeleted === false
+  );
 
   return (
     <Box>
@@ -79,8 +82,9 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
             }}
           >
             <List spacing={2}>
-              {sidebarItemsData.map((item) => (
+              {sidebarItemsData.map((item, index) => (
                 <ListItem
+                  key={index}
                   sx={{
                     cursor: "pointer",
                     bgColor: pathname === item.path ? "#272A30" : "#17181F",
@@ -127,18 +131,10 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
                   px: 1,
                 }}
                 alignItems="center"
-                justifyContent="space-between"
               >
                 <Text>PROJECTS</Text>
-                <Image
-                  src={addProject}
-                  objectFit={"cover"}
-                  sx={{
-                    width: "24px",
-                    height: "24px",
-                    cursor: "pointer",
-                  }}
-                />
+                <Spacer />
+                <CreateProject sidebar />
               </Flex>
               {/* Project list */}
               <Flex
@@ -154,8 +150,9 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
                     width: "100%",
                   }}
                 >
-                  {projects?.map((item) => (
+                  {filteredProjects?.map((item) => (
                     <ListItem
+                      key={item?.id}
                       sx={{
                         cursor: "pointer",
                         bgColor: "#20212C",
@@ -210,7 +207,7 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
             md: "flex",
           },
           flexDirection: "column",
-          gap: 5,
+          gap: 7,
           bgColor: "#17181F",
           height: "100vh",
           borderRight: "solid 4px",
@@ -228,9 +225,11 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
             ml: "-20px",
           }}
         />
-        <List spacing={2}>
-          {sidebarItemsData.map((item) => (
+        {/* Page routes */}
+        <List spacing={1}>
+          {sidebarItemsData.map((item, index) => (
             <ListItem
+              key={index}
               sx={{
                 cursor: "pointer",
                 bgColor: pathname === item.path ? "#272A30" : "#17181F",
@@ -242,6 +241,8 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
                 _hover: {
                   bg: pathname === item.path ? "#272A30" : "#17181F",
                 },
+                borderRight: pathname === item.path && "3px solid",
+                borderRightColor: pathname === item.path && "#7259C6",
               }}
               onClick={() => {
                 navigate(item.path);
@@ -267,6 +268,7 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
           ))}
         </List>
 
+        {/* Projects container */}
         <Flex direction="column" width="100%" gap={3}>
           {/* Create project */}
           <Flex
@@ -276,18 +278,10 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
               px: 1,
             }}
             alignItems="center"
-            justifyContent="space-between"
           >
             <Text>PROJECTS</Text>
-            <Image
-              src={addProject}
-              objectFit={"cover"}
-              sx={{
-                width: "24px",
-                height: "24px",
-                cursor: "pointer",
-              }}
-            />
+            <Spacer />
+            <CreateProject sidebar />
           </Flex>
           {/* Project list */}
           <Flex
@@ -303,8 +297,9 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
                 width: "100%",
               }}
             >
-              {projects.map((item) => (
+              {filteredProjects.map((item) => (
                 <ListItem
+                  key={item?.id}
                   sx={{
                     cursor: "pointer",
                     bgColor: "#20212C",

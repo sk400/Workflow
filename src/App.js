@@ -3,7 +3,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import { Layout } from "./components";
 
-import { Home, ProjectDetails } from "./pages";
+import { Bin, LabelsPage, ProjectDetails, Projects } from "./pages";
 
 import { auth, db } from "./firebase";
 import { useEffect } from "react";
@@ -68,7 +68,9 @@ function App() {
     <Layout>
       <Box>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Projects />} />
+          <Route path="/labels" element={<LabelsPage />} />
+          <Route path="/bin" element={<Bin />} />
           <Route path="/projects/:projectId" element={<ProjectDetails />} />
         </Routes>
       </Box>

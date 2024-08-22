@@ -1,29 +1,37 @@
 import {
-  Center,
   Flex,
   Heading,
   SimpleGrid,
   Card,
   CardHeader,
   CardBody,
-  CardFooter,
   Text,
-  Button,
+  Icon,
+  MenuItem,
+  MenuList,
+  MenuButton,
+  Menu,
 } from "@chakra-ui/react";
 import React from "react";
 import CreateProject from "../features/projects/CreateProject";
 import { useGlobalState } from "../context";
 import { useNavigate } from "react-router-dom";
+import { MdMore } from "react-icons/md";
+import { IoMdMore } from "react-icons/io";
+import Project from "../features/projects/Project";
 
-const Home = () => {
-  const { projects } = useGlobalState();
+const Projects = () => {
+  const { projects, user } = useGlobalState();
 
-  const navigate = useNavigate();
+  // const heading = projects.length ? "Your projects" : "No projects found";
 
-  const heading = projects.length ? "Your projects" : "No projects found";
+  const filteredProjects = projects?.filter(
+    (project) => project?.isDeleted === false
+  );
 
   return (
-    <Flex
+    <>
+      {/* <Flex
       direction="column"
       align="center"
       width="95%"
@@ -94,8 +102,43 @@ const Home = () => {
           </Card>
         ))}
       </SimpleGrid>
-    </Flex>
+    </Flex> */}
+
+      <Flex
+        direction="column"
+        align="center"
+        width="95%"
+        mx="auto"
+        gap={5}
+
+        // mb={20}
+      >
+        <Heading
+          sx={{
+            fontWeight: "thin",
+            fontSize: "32px",
+            textAlign: "center",
+            fontFamily: "open",
+            alignSelf: "start",
+            color: "gray.50",
+            mt: 7,
+            mb: 10,
+          }}
+        >
+          Hi {user?.name} 👋
+        </Heading>
+        <SimpleGrid
+          templateColumns="repeat(auto-fill, minmax(200px, 1fr))"
+          spacing={4}
+          width="100%"
+        >
+          {filteredProjects?.map((project) => (
+            <Project item={project} key={project?.id} />
+          ))}
+        </SimpleGrid>
+      </Flex>
+    </>
   );
 };
 
-export default Home;
+export default Projects;
