@@ -27,7 +27,7 @@ const Layout = ({ children }) => {
           }}
         >
           <Navbar onOpen={onOpen} btnRef={btnRef} />
-          {children}
+          <Box sx={{ p: { base: 3, sm: 5 } }}>{children}</Box>
         </Box>
       </Flex>
     </Flex>

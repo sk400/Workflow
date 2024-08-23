@@ -44,11 +44,36 @@ Update
 --------------------
 
 - project details page
-- CRUD on tasks
+
+  - Categories ui 
+  - Task ui
+  - Task with image 
+
+  - Update database structure that supports both category and drag and drop
+
+  - Create category
+  - Render category
+  - Rename category
+  - Delete category
+
+  - Create task*
+  - Render task
+  - Rename task
+  - Delete task
+
+
+
+
+- Right border of project card and sidebar items
+- change color of ui elements
+- Sign out button in drawer
+- Category buttons ui
+
 - labels page
 - CRUD on labels and filteration
 
-- bin 
+
+
 
 
 

@@ -2,7 +2,7 @@ import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
 
-export const useGetRealtimeTasks = (user, projectId) => {
+export const useGetRealtimeData = (user, projectId) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
 
@@ -10,7 +10,14 @@ export const useGetRealtimeTasks = (user, projectId) => {
     if (!user) return;
     const taskQuery = query(
       user &&
-        collection(db, "users", user?.email, "projects", projectId, "tasks"),
+        collection(
+          db,
+          "users",
+          user?.email,
+          "projects",
+          projectId,
+          "categories"
+        ),
       orderBy("createdAt", "asc")
     );
 

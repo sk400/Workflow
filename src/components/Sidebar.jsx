@@ -13,6 +13,7 @@ import {
   Text,
   Image,
   Spacer,
+  DrawerCloseButton,
 } from "@chakra-ui/react";
 
 import CreateProject from "../features/projects/CreateProject";
@@ -72,6 +73,7 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
             bgColor: "#17181F",
           }}
         >
+          <DrawerCloseButton color="gray.50" />
           <DrawerHeader></DrawerHeader>
 
           <DrawerBody

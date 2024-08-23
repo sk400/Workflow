@@ -107,26 +107,27 @@ const Projects = () => {
       <Flex
         direction="column"
         align="center"
-        width="95%"
-        mx="auto"
         gap={5}
-
-        // mb={20}
+        sx={{
+          px: { md: 5 },
+        }}
       >
-        <Heading
-          sx={{
-            fontWeight: "thin",
-            fontSize: "32px",
-            textAlign: "center",
-            fontFamily: "open",
-            alignSelf: "start",
-            color: "gray.50",
-            mt: 7,
-            mb: 10,
-          }}
-        >
-          Hi {user?.name} 👋
-        </Heading>
+        {user && (
+          <Heading
+            sx={{
+              fontWeight: "thin",
+              fontSize: "32px",
+              textAlign: "center",
+              fontFamily: "open",
+              alignSelf: "start",
+              color: "gray.50",
+              mt: 7,
+              mb: 10,
+            }}
+          >
+            Hi {user?.name} 👋
+          </Heading>
+        )}
         <SimpleGrid
           templateColumns="repeat(auto-fill, minmax(200px, 1fr))"
           spacing={4}
