@@ -71,16 +71,10 @@ Update
 
 - labels page
 - CRUD on labels and filteration
-
-
-
-
-
-
-
 - Email and password authentication with forgot password 
 - Drag and drop
 
+- Change colors of the UI
 
 
 
@@ -110,3 +104,10 @@ Completed
 
 
 - errors in console
+
+
+
+ideas
+--------
+
+Rebuild chintu ngo website with firebase with image and video upload and ask a recommendation

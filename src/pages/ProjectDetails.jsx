@@ -23,6 +23,7 @@ import { IoMdAdd } from "react-icons/io";
 import Category from "../features/projects/Category";
 import Tasks from "../features/tasks/Tasks";
 import CreateCategory from "../features/projects/CreateCategory";
+import CreateTask from "../features/tasks/CreateTask";
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
@@ -173,6 +174,7 @@ const ProjectDetails = () => {
           {data?.map((category) => (
             <Box key={category?.id}>
               <Category category={category} />
+              <CreateTask />
               <Tasks tasks={category?.tasks} />
             </Box>
           ))}

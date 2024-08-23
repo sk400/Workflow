@@ -25,6 +25,7 @@ import { useState } from "react";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import CommonCategoryModal from "./CommonCategoryModal";
+import CreateTask from "../tasks/CreateTask";
 
 const Category = ({ category }) => {
   const { user } = useGlobalState();
