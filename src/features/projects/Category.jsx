@@ -16,6 +16,8 @@ import {
   ModalOverlay,
   useDisclosure,
   ModalFooter,
+  Icon,
+  Spacer,
 } from "@chakra-ui/react";
 import addProjectIcon from "../../assets/add-project.png";
 import moreIcon from "../../assets/more-icon.png";
@@ -25,9 +27,9 @@ import { useState } from "react";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import CommonCategoryModal from "./CommonCategoryModal";
-import CreateTask from "../tasks/CreateTask";
+import { IoClose } from "react-icons/io5";
 
-const Category = ({ category }) => {
+const Category = ({ category, setShow, show }) => {
   const { user } = useGlobalState();
   const { projectId } = useParams();
   const [categoryName, setCategoryName] = useState(category?.name);
@@ -93,7 +95,7 @@ const Category = ({ category }) => {
     <>
       <Flex
         alignItems="center"
-        justifyContent="space-between"
+        // justifyContent="space-between"
         sx={{
           color: "gray.50",
           pl: 3,
@@ -103,20 +105,18 @@ const Category = ({ category }) => {
           height: "55px",
         }}
       >
-        <HStack
+        <Text
           sx={{
-            gap: 3,
+            textTransform: "uppercase",
           }}
+          fontSize="sm"
+          letterSpacing="1px"
         >
-          <Text
-            sx={{
-              textTransform: "uppercase",
-            }}
-            fontSize="sm"
-            letterSpacing="1px"
-          >
-            {category?.name}
-          </Text>
+          {category?.name}
+        </Text>
+        <Spacer />
+
+        <HStack gap={3} justifySelf="flex-end" height="100%">
           <Center
             sx={{
               width: "25px",
@@ -129,8 +129,6 @@ const Category = ({ category }) => {
               {category?.tasks?.length}
             </Text>
           </Center>
-        </HStack>
-        <HStack gap={3}>
           <Image
             src={addProjectIcon}
             objectFit={"cover"}
@@ -139,6 +137,7 @@ const Category = ({ category }) => {
               height: "20px",
               cursor: "pointer",
             }}
+            onClick={() => setShow((prev) => !prev)}
           />
 
           <Menu>
@@ -203,16 +202,17 @@ const Category = ({ category }) => {
               </MenuItem>
             </MenuList>
           </Menu>
+          <Box
+            sx={{
+              height: "80%",
+              pl: 1,
+              py: 1,
+              borderRadius: "md",
+              bgColor: "#7259C6",
+              justifySelf: "end",
+            }}
+          ></Box>
         </HStack>
-        <Box
-          sx={{
-            height: "80%",
-            pl: 1,
-            py: 1,
-            borderRadius: "md",
-            bgColor: "#7259C6",
-          }}
-        ></Box>
       </Flex>
 
       <CommonCategoryModal

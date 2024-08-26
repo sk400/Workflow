@@ -6,11 +6,11 @@ const Loading = () => (
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      height: "90vh",
+      height: "50vh",
       width: "100%",
     }}
   >
-    <Spinner size="xl" color="orange.400" />
+    <Spinner size="xl" color="#7259C6" />
   </Box>
 );
 export default Loading;

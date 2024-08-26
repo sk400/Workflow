@@ -74,6 +74,7 @@ const Project = ({ item }) => {
         sx={{
           bgColor: "#272A30",
           color: "gray.50",
+          height: "100%",
           borderRight: "3px solid",
           borderRightColor: "#7259C6",
           cursor: "pointer",

@@ -9,21 +9,20 @@ import {
   MenuList,
   SimpleGrid,
   Spacer,
-  Text,
 } from "@chakra-ui/react";
 
-import { useGlobalState } from "../context";
 import { useParams } from "react-router-dom";
 
 import { useGetRealtimeData } from "../lib/customHooks";
 
 import { Loading } from "../components";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { IoMdAdd } from "react-icons/io";
+
 import Category from "../features/projects/Category";
 import Tasks from "../features/tasks/Tasks";
 import CreateCategory from "../features/projects/CreateCategory";
 import CreateTask from "../features/tasks/CreateTask";
+import { Suspense, useState } from "react";
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
@@ -32,11 +31,9 @@ const ProjectDetails = () => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [data, loading] = useGetRealtimeData(user, projectId);
+  const [show, setShow] = useState(false);
 
-  if (loading) return <Loading />;
-
-  // update category name
-  // delete category
+  // if (loading) return <Loading />;
 
   return (
     <>
@@ -169,20 +166,23 @@ const ProjectDetails = () => {
           </HStack>
         </Flex>
 
-        {/* Category columns */}
-        <SimpleGrid minChildWidth={"300px"} spacing={["10px", "40px"]}>
-          {data?.map((category) => (
-            <Box key={category?.id}>
-              <Category category={category} />
-              <CreateTask />
-              <Tasks tasks={category?.tasks} />
-            </Box>
-          ))}
+        {loading ? (
+          <Loading />
+        ) : (
+          <SimpleGrid minChildWidth={"300px"} spacing={["10px", "40px"]}>
+            {data?.map((category) => (
+              <Box key={category?.id}>
+                <Category category={category} setShow={setShow} show={show} />
+                {show && (
+                  <CreateTask setShow={setShow} categoryId={category?.id} />
+                )}
+                <Tasks tasks={category?.tasks} categoryId={category?.id} />
+              </Box>
+            ))}
+          </SimpleGrid>
+        )}
 
-          {/* <Category name="Responsive design" noOfItems={23} />
-          <Category name="Responsive design" noOfItems={23} />
-          <Category name="Responsive design" noOfItems={23} /> */}
-        </SimpleGrid>
+        {/* Category columns */}
       </Flex>
     </>
   );

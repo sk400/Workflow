@@ -1,37 +1,39 @@
 import {
   Box,
   Button,
-  Center,
   Flex,
   Heading,
   HStack,
   Icon,
   Image,
   Input,
-  Spinner,
   Text,
   Textarea,
-  useDisclosure,
 } from "@chakra-ui/react";
-import addProjectIcon from "../../assets/add-project.png";
 import { useGlobalState } from "../../context";
 import { IoClose, IoCloudUploadSharp } from "react-icons/io5";
-import { MdDelete } from "react-icons/md";
 import { useState } from "react";
-import { createReference } from "../../firebase";
+import { createReference, db } from "../../firebase";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
+import { useParams } from "react-router-dom";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 
-const CreateTask = () => {
-  // Design the create task form
-  // setup firebase storage
-  // onclick show create task form
-  // get task info from user
-  // upload the image to firebase storage
-  // get thedownload url and show the image in create task form
-  // After getting all the task info, add task to firestore.
-
+const CreateTask = ({ categoryId, setShow }) => {
   const { user } = useGlobalState();
+  const { projectId } = useParams();
   const [imageUrl, setImageUrl] = useState("");
+  const [taskData, setTaskData] = useState({
+    title: "",
+    description: "",
+    deadline: "",
+  });
 
   const uploadImage = (e) => {
     const file = e.target.files[0];
@@ -62,6 +64,55 @@ const CreateTask = () => {
     }
   };
 
+  const handleChange = (e) => {
+    setTaskData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleClick = async () => {
+    if (
+      !taskData?.title?.length ||
+      !taskData?.description?.length ||
+      !taskData?.deadline?.length
+    ) {
+      alert("Task name or description cannot be empty");
+      return;
+    }
+
+    try {
+      const categoryRef = doc(
+        db,
+        "users",
+        user?.email,
+        "projects",
+        projectId,
+        "categories",
+        categoryId
+      );
+
+      const project = await getDoc(categoryRef);
+
+      const projectData = project.data();
+
+      const newTask = {
+        ...taskData,
+        id: Date.now(),
+        imageUrl,
+        createdAt: Date.now(),
+      };
+
+      await updateDoc(categoryRef, {
+        tasks: [...projectData?.tasks, newTask],
+      });
+      setShow(false);
+      setTaskData({ title: "", description: "" });
+      setImageUrl("");
+
+      console.log("Task added successfully");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -82,7 +133,7 @@ const CreateTask = () => {
       </Heading>
       <Input
         variant="outline"
-        name="name"
+        name="title"
         sx={{
           bgColor: "#20212C",
           color: "#a0aec0",
@@ -95,13 +146,33 @@ const CreateTask = () => {
         errorBorderColor="#4A4B52"
         focusBorderColor="#3772FF"
         autoComplete="off"
-        placeholder="Project name"
-        // value={item?.name}
-        // onChange={handleChange}
+        placeholder="Title"
+        value={taskData?.title}
+        onChange={handleChange}
+      />
+      <Input
+        variant="outline"
+        type="date"
+        name="deadline"
+        sx={{
+          bgColor: "#20212C",
+          color: "#a0aec0",
+          _hover: {
+            bgColor: "#20212C",
+            opacity: 0.8,
+          },
+        }}
+        isInvalid
+        errorBorderColor="#4A4B52"
+        focusBorderColor="#3772FF"
+        autoComplete="off"
+        placeholder="Deadline"
+        value={taskData?.deadline}
+        onChange={handleChange}
       />
       <Textarea
         name="description"
-        placeholder="Item description"
+        placeholder="About the task"
         sx={{
           bgColor: "#20212C",
           color: "#a0aec0",
@@ -117,8 +188,8 @@ const CreateTask = () => {
         resize="none"
         autoComplete="off"
         variant="outline"
-        // value={item?.description}
-        // onChange={handleChange}
+        value={taskData?.description}
+        onChange={handleChange}
       />
 
       {/* Image upload button */}
@@ -182,10 +253,6 @@ const CreateTask = () => {
         </>
       )}
 
-      {/* <Center width="100%">
-              <Spinner />
-            </Center> */}
-
       <Button
         sx={{
           bgColor: "#3772FF",
@@ -196,7 +263,7 @@ const CreateTask = () => {
           },
         }}
         onClick={() => {
-          //   handleClick();
+          handleClick();
         }}
       >
         Done

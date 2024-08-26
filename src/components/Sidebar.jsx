@@ -14,6 +14,14 @@ import {
   Image,
   Spacer,
   DrawerCloseButton,
+  DrawerFooter,
+  Popover,
+  Avatar,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverBody,
+  Button,
 } from "@chakra-ui/react";
 
 import CreateProject from "../features/projects/CreateProject";
@@ -25,6 +33,9 @@ import { useGlobalState } from "../context";
 import { useLocation, useNavigate } from "react-router-dom";
 import { GoProjectRoadmap } from "react-icons/go";
 import logo from "../assets/workflow-logo.png";
+import { PiSignOut } from "react-icons/pi";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
 
 const sidebarItemsData = [
   // {
@@ -50,7 +61,7 @@ const sidebarItemsData = [
 ];
 
 const Sidebar = ({ isOpen, btnRef, onClose }) => {
-  const { projects } = useGlobalState();
+  const { projects, user } = useGlobalState();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -197,6 +208,44 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
               </Flex>
             </Flex>
           </DrawerBody>
+          <DrawerFooter>
+            <Popover>
+              <PopoverTrigger>
+                <Avatar
+                  name={user?.name}
+                  src={user?.photo}
+                  cursor={"pointer"}
+                  boxSize={"30px"}
+                />
+              </PopoverTrigger>
+              <PopoverContent
+                sx={{
+                  width: "150px",
+                  bgColor: "#272A30",
+                  color: "gray.50",
+                  border: "none",
+                }}
+              >
+                <PopoverBody>
+                  <Button
+                    leftIcon={<PiSignOut />}
+                    variant="solid"
+                    onClick={() => signOut(auth)}
+                    sx={{
+                      bgColor: "#272A30",
+                      color: "gray.50",
+                      _hover: {
+                        bgColor: "#272A30",
+                        opacity: "0.8",
+                      },
+                    }}
+                  >
+                    Sign out
+                  </Button>
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
+          </DrawerFooter>
         </DrawerContent>
       </Drawer>
 
@@ -243,8 +292,8 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
                 _hover: {
                   bg: pathname === item.path ? "#272A30" : "#17181F",
                 },
-                borderRight: pathname === item.path && "3px solid",
-                borderRightColor: pathname === item.path && "#7259C6",
+                // borderRight: pathname === item.path && "3px solid",
+                // borderRightColor: pathname === item.path && "#7259C6",
               }}
               onClick={() => {
                 navigate(item.path);

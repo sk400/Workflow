@@ -56,26 +56,24 @@ Update
   - Rename category
   - Delete category
 
-  - Create task*
+  - Create task
+
+    - Add all the fields to create task component
+
+
   - Render task
   - Rename task
   - Delete task
 
-
-
-
-- Right border of project card and sidebar items
-- change color of ui elements
-- Sign out button in drawer
-- Category buttons ui
 
 - labels page
 - CRUD on labels and filteration
 - Email and password authentication with forgot password 
 - Drag and drop
 
-- Change colors of the UI
-
+- Change colors of the UI (add a global state to customise the colors)
+- Bin tasks
+- fonts
 
 
 
@@ -104,7 +102,10 @@ Completed
 
 
 - errors in console
-
+- Right border of project card and sidebar items
+- change color of ui elements
+- Sign out button in drawer
+- Category buttons ui
 
 
 ideas
