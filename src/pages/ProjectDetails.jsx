@@ -9,6 +9,8 @@ import {
   MenuList,
   SimpleGrid,
   Spacer,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 
 import { useParams } from "react-router-dom";
@@ -108,7 +110,7 @@ const ProjectDetails = () => {
                   },
                 }}
               >
-                Sort by
+                Labels
               </MenuButton>
               <MenuList
                 sx={{
@@ -125,7 +127,7 @@ const ProjectDetails = () => {
                     },
                   }}
                 >
-                  Newest first
+                  Label 1
                 </MenuItem>
                 <MenuItem
                   sx={{
@@ -136,7 +138,7 @@ const ProjectDetails = () => {
                     },
                   }}
                 >
-                  Older first
+                  Label 2
                 </MenuItem>
                 <MenuItem
                   sx={{
@@ -147,7 +149,7 @@ const ProjectDetails = () => {
                     },
                   }}
                 >
-                  Task name
+                  Label 3
                 </MenuItem>
                 <MenuItem
                   sx={{
@@ -158,7 +160,7 @@ const ProjectDetails = () => {
                     },
                   }}
                 >
-                  Priority
+                  Label 4
                 </MenuItem>
               </MenuList>
             </Menu>
@@ -169,17 +171,19 @@ const ProjectDetails = () => {
         {loading ? (
           <Loading />
         ) : (
-          <SimpleGrid minChildWidth={"300px"} spacing={["10px", "40px"]}>
+          <Wrap spacing={["10px", "40px"]}>
             {data?.map((category) => (
-              <Box key={category?.id}>
-                <Category category={category} setShow={setShow} show={show} />
-                {show && (
-                  <CreateTask setShow={setShow} categoryId={category?.id} />
-                )}
-                <Tasks tasks={category?.tasks} categoryId={category?.id} />
-              </Box>
+              <WrapItem key={category?.id}>
+                <Box>
+                  <Category category={category} setShow={setShow} show={show} />
+                  {show && (
+                    <CreateTask setShow={setShow} categoryId={category?.id} />
+                  )}
+                  <Tasks tasks={category?.tasks} categoryId={category?.id} />
+                </Box>
+              </WrapItem>
             ))}
-          </SimpleGrid>
+          </Wrap>
         )}
 
         {/* Category columns */}

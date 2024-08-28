@@ -43,27 +43,27 @@ Next level Features
 Update
 --------------------
 
-- project details page
 
-  - Categories ui 
-  - Task ui
-  - Task with image 
+implement react query
 
-  - Update database structure that supports both category and drag and drop
+- CRUD on projects
 
-  - Create category
-  - Render category
-  - Rename category
-  - Delete category
+r *
+c
+u
+d
 
-  - Create task
+- CRUD on tasks
 
-    - Add all the fields to create task component
+r
+c
+u
+d
 
 
-  - Render task
-  - Rename task
-  - Delete task
+
+
+
 
 
 - labels page
@@ -74,6 +74,8 @@ Update
 - Change colors of the UI (add a global state to customise the colors)
 - Bin tasks
 - fonts
+- user button to in small sidebar
+
 
 
 
@@ -102,6 +104,30 @@ Completed
 
 
 - errors in console
+
+- project details page
+
+  - Categories ui 
+  - Task ui
+  - Task with image 
+
+  - Update database structure that supports both category and drag and drop
+
+  - Create category
+  - Render category
+  - Rename category
+  - Delete category
+
+  - Create task
+
+    - Add all the fields to create task component
+
+
+  - Render task
+  - Rename task
+  - Delete task
+
+
 - Right border of project card and sidebar items
 - change color of ui elements
 - Sign out button in drawer

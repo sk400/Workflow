@@ -170,6 +170,7 @@ const Task = ({ task, categoryId }) => {
           flexDirection: "column",
           position: "relative",
           gap: 4,
+          width: "300px",
         }}
       >
         <Flex>

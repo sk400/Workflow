@@ -1,10 +1,12 @@
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
+import { useGlobalState } from "../context";
 
 export const useGetRealtimeData = (user, projectId) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
+  const { setCategories } = useGlobalState();
 
   useEffect(() => {
     if (!user) return;
@@ -32,6 +34,7 @@ export const useGetRealtimeData = (user, projectId) => {
 
         if (documents?.length) {
           setData(documents);
+          setCategories(documents);
         } else {
           setData([]);
         }
