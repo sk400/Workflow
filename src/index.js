@@ -18,7 +18,13 @@ import { Provider } from "./context";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 3600000,
+    },
+  },
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 

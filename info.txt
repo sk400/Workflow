@@ -53,6 +53,13 @@ c
 u
 d
 
+- CRUD on categories
+
+r
+c
+u
+d
+
 - CRUD on tasks
 
 r
@@ -60,6 +67,12 @@ c
 u
 d
 
+- bin page
+- remove unused code
+- commit changes
+- optimistic update
+- create task show state
+- prefetch queries
 
 
 

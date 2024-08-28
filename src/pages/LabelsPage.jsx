@@ -1,5 +1,5 @@
 import { collection, doc, getDocs } from "firebase/firestore";
-import { useGlobalState } from "../context";
+
 import { db } from "../firebase";
 import { useMemo } from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
@@ -7,7 +7,7 @@ import { SimpleGrid, Wrap, WrapItem } from "@chakra-ui/react";
 import Task from "../features/tasks/Task";
 
 const LabelsPage = () => {
-  const { user } = useGlobalState();
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const getProjects = async () => {
     try {

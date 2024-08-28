@@ -1,41 +1,31 @@
 import React, { useState } from "react";
 import {
-  Box,
-  Flex,
   Icon,
-  IconButton,
   Text,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
   useDisclosure,
-  Button,
   Card,
   CardHeader,
   Heading,
   CardBody,
 } from "@chakra-ui/react";
-import { SlOptionsVertical } from "react-icons/sl";
+
 import { useNavigate } from "react-router-dom";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
-import { useGlobalState } from "../../context";
 import { CommonModal } from "../../components";
 import { IoMdMore } from "react-icons/io";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const Project = ({ item }) => {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [projectInfo, setProjectInfo] = useState(item);
 
-  const { user } = useGlobalState();
+  const user = JSON.parse(localStorage.getItem("user"));
 
   /**
    * Updates a project in the Firestore database.
@@ -65,6 +55,24 @@ const Project = ({ item }) => {
       console.error("Error updating project: ", error);
     }
   };
+
+  const queryClient = useQueryClient();
+
+  const editMutation = useMutation({
+    mutationFn: (data) => updateProject(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["bin", "projects"] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (data) => updateProject(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["bin", "projects"] });
+    },
+  });
 
   return (
     <>
@@ -149,7 +157,8 @@ const Project = ({ item }) => {
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  updateProject({
+
+                  deleteMutation.mutate({
                     isDeleted: item?.isDeleted === true ? false : true,
                   });
                 }}
@@ -167,7 +176,7 @@ const Project = ({ item }) => {
         name="Save"
         item={projectInfo}
         setterFunction={setProjectInfo}
-        actionFunction={updateProject}
+        actionFunction={editMutation.mutate}
       />
     </>
   );

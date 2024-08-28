@@ -22,19 +22,20 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { IoMdMore } from "react-icons/io";
-import { useGlobalState } from "../../context";
 import { useParams } from "react-router-dom";
 import { createReference, db } from "../../firebase";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { IoClose, IoCloudUploadSharp } from "react-icons/io5";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const Task = ({ task, categoryId }) => {
-  const { user } = useGlobalState();
+  const user = JSON.parse(localStorage.getItem("user"));
   const { projectId } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [imageUrl, setImageUrl] = useState(task?.imageUrl);
   const [taskData, setTaskData] = useState(task);
+  const queryClient = useQueryClient();
 
   const uploadImage = (e) => {
     const file = e.target.files[0];
@@ -157,6 +158,20 @@ const Task = ({ task, categoryId }) => {
     }
   };
 
+  const editMutation = useMutation({
+    mutationFn: handleEdit,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["categories", projectId]);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: handleDelete,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["categories", projectId]);
+    },
+  });
+
   return (
     <>
       <Box
@@ -254,7 +269,7 @@ const Task = ({ task, categoryId }) => {
               }}
               onClick={(e) => {
                 e.stopPropagation();
-                handleDelete();
+                deleteMutation.mutate();
               }}
             >
               Add to bin
@@ -277,7 +292,7 @@ const Task = ({ task, categoryId }) => {
         </Menu>
       </Box>
 
-      {/* Modal */}
+      {/* Edit Modal */}
       <Modal isOpen={isOpen} onClose={onClose} size="xs">
         <ModalOverlay />
         <ModalContent
@@ -289,7 +304,7 @@ const Task = ({ task, categoryId }) => {
           }}
         >
           <Heading size="sm" fontWeight="medium">
-            Create new card
+            Edit task
           </Heading>
           <Input
             variant="outline"
@@ -423,7 +438,7 @@ const Task = ({ task, categoryId }) => {
               },
             }}
             onClick={() => {
-              handleEdit();
+              editMutation.mutate();
             }}
           >
             Done

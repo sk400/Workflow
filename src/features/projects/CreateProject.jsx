@@ -1,17 +1,18 @@
-import { Box, Icon, IconButton, Image, useDisclosure } from "@chakra-ui/react";
+import { Icon, IconButton, Image, useDisclosure } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { useGlobalState } from "../../context";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase";
 import { CommonModal } from "../../components";
 import addProject from "../../assets/add-project.png";
 import { IoMdAddCircleOutline } from "react-icons/io";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CreateProject = ({ sidebar }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [projectInfo, setProjectInfo] = useState({ name: "", description: "" });
-  const { user } = useGlobalState();
+  const user = JSON.parse(localStorage.getItem("user"));
 
+  const queryClient = useQueryClient();
   /**
    * Asynchronously creates a new project in the Firebase Firestore database.
    * The project is added to the user's collection of projects.
@@ -48,6 +49,13 @@ const CreateProject = ({ sidebar }) => {
     }
   };
 
+  const mutation = useMutation({
+    mutationFn: createProjectOnFirestore,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+
   return (
     <>
       {sidebar ? (
@@ -83,7 +91,7 @@ const CreateProject = ({ sidebar }) => {
         name="Create"
         item={projectInfo}
         setterFunction={setProjectInfo}
-        actionFunction={createProjectOnFirestore}
+        actionFunction={mutation.mutate}
       />
     </>
   );

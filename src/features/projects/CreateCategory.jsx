@@ -1,24 +1,19 @@
-import {
-  Button,
-  Input,
-  Modal,
-  ModalContent,
-  ModalOverlay,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Button, useDisclosure } from "@chakra-ui/react";
 import { IoMdAdd } from "react-icons/io";
-import { useGlobalState } from "../../context";
+
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase";
 import CommonCategoryModal from "./CommonCategoryModal";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CreateCategory = () => {
-  const { user } = useGlobalState();
+  const user = JSON.parse(localStorage.getItem("user"));
   const { projectId } = useParams();
   const [categoryName, setCategoryName] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const queryClient = useQueryClient();
 
   /**
    * Handles the creation of a new category when the user clicks the "Create"
@@ -69,6 +64,13 @@ const CreateCategory = () => {
     if (e?.target?.value?.length <= 20) setCategoryName(e?.target?.value);
   };
 
+  const mutationCreate = useMutation({
+    mutationFn: handleClick,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories", projectId] });
+    },
+  });
+
   return (
     <>
       <Button
@@ -95,7 +97,7 @@ const CreateCategory = () => {
         onClose={onClose}
         categoryName={categoryName}
         handleChange={handleChange}
-        handleClick={handleClick}
+        handleClick={mutationCreate.mutate}
       />
     </>
   );

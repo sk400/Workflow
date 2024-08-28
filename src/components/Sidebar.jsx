@@ -19,30 +19,25 @@ import {
   Avatar,
   PopoverTrigger,
   PopoverContent,
-  PopoverArrow,
   PopoverBody,
   Button,
 } from "@chakra-ui/react";
 
 import CreateProject from "../features/projects/CreateProject";
-import Project from "../features/projects/Project";
-import { MdHome, MdLabel, MdDelete } from "react-icons/md";
+
+import { MdLabel, MdDelete } from "react-icons/md";
 import { FaTasks } from "react-icons/fa";
-import addProject from "../assets/add-project.png";
-import { useGlobalState } from "../context";
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { GoProjectRoadmap } from "react-icons/go";
 import logo from "../assets/workflow-logo.png";
 import { PiSignOut } from "react-icons/pi";
 import { signOut } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { useQuery } from "@tanstack/react-query";
 
 const sidebarItemsData = [
-  // {
-  //   title: "Home",
-  //   icon: MdHome,
-  //   path: "/",
-  // },
   {
     title: "Projects",
     icon: FaTasks,
@@ -61,13 +56,33 @@ const sidebarItemsData = [
 ];
 
 const Sidebar = ({ isOpen, btnRef, onClose }) => {
-  const { projects, user } = useGlobalState();
+  const user = JSON.parse(localStorage.getItem("user"));
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const filteredProjects = projects?.filter(
-    (project) => project?.isDeleted === false
-  );
+  const getProjects = async () => {
+    try {
+      const userProjectsRef = collection(db, "users", user?.email, "projects");
+      const querySnapshot = await getDocs(
+        query(userProjectsRef, orderBy("createdAt", "desc"))
+      );
+      const projectsData = querySnapshot?.docs?.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      return projectsData;
+    } catch (error) {
+      console.error("Error fetching user projects: ", error);
+    }
+  };
+
+  const { data: projects } = useQuery({
+    queryKey: ["projects"],
+    queryFn: getProjects,
+    select: (data) => {
+      return data?.filter((project) => project?.isDeleted === false);
+    },
+  });
 
   return (
     <Box>
@@ -163,7 +178,7 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
                     width: "100%",
                   }}
                 >
-                  {filteredProjects?.map((item) => (
+                  {projects?.map((item) => (
                     <ListItem
                       key={item?.id}
                       sx={{
@@ -348,7 +363,7 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
                 width: "100%",
               }}
             >
-              {filteredProjects.map((item) => (
+              {projects?.map((item) => (
                 <ListItem
                   key={item?.id}
                   sx={{

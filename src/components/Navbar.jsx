@@ -15,16 +15,16 @@ import {
 import { PiSignOut } from "react-icons/pi";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
-import { useGlobalState } from "../context";
+
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/workflow-logo.png";
 import { IoMenuOutline } from "react-icons/io5";
-import { IoMdAddCircleOutline } from "react-icons/io";
+
 import Searchbar from "./Searchbar";
 import CreateProject from "../features/projects/CreateProject";
 
 const Navbar = ({ onOpen, btnRef }) => {
-  const { user } = useGlobalState();
+  const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
 
   return (

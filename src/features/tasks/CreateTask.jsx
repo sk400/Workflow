@@ -10,23 +10,17 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import { useGlobalState } from "../../context";
+
 import { IoClose, IoCloudUploadSharp } from "react-icons/io5";
 import { useState } from "react";
 import { createReference, db } from "../../firebase";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
 import { useParams } from "react-router-dom";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  serverTimestamp,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CreateTask = ({ categoryId, setShow }) => {
-  const { user } = useGlobalState();
+  const user = JSON.parse(localStorage.getItem("user"));
   const { projectId } = useParams();
   const [imageUrl, setImageUrl] = useState("");
   const [taskData, setTaskData] = useState({
@@ -34,6 +28,8 @@ const CreateTask = ({ categoryId, setShow }) => {
     description: "",
     deadline: "",
   });
+
+  const queryClient = useQueryClient();
 
   const uploadImage = (e) => {
     const file = e.target.files[0];
@@ -99,11 +95,11 @@ const CreateTask = ({ categoryId, setShow }) => {
         imageUrl,
         createdAt: Date.now(),
       };
-
+      setShow(false);
       await updateDoc(categoryRef, {
         tasks: [...projectData?.tasks, newTask],
       });
-      setShow(false);
+
       setTaskData({ title: "", description: "" });
       setImageUrl("");
 
@@ -112,6 +108,13 @@ const CreateTask = ({ categoryId, setShow }) => {
       console.log(error);
     }
   };
+
+  const createMutation = useMutation({
+    mutationFn: handleClick,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories", projectId] });
+    },
+  });
 
   return (
     <Box
@@ -129,7 +132,7 @@ const CreateTask = ({ categoryId, setShow }) => {
       }}
     >
       <Heading size="sm" fontWeight="medium">
-        Create new card
+        Create new task
       </Heading>
       <Input
         variant="outline"
@@ -263,7 +266,7 @@ const CreateTask = ({ categoryId, setShow }) => {
           },
         }}
         onClick={() => {
-          handleClick();
+          createMutation.mutate();
         }}
       >
         Done

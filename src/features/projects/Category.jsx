@@ -9,31 +9,31 @@ import {
   MenuItem,
   MenuList,
   Text,
-  Input,
   Modal,
   Button,
   ModalContent,
   ModalOverlay,
   useDisclosure,
-  ModalFooter,
-  Icon,
   Spacer,
 } from "@chakra-ui/react";
 import addProjectIcon from "../../assets/add-project.png";
 import moreIcon from "../../assets/more-icon.png";
-import { useGlobalState } from "../../context";
+
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import CommonCategoryModal from "./CommonCategoryModal";
 import { IoClose } from "react-icons/io5";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const Category = ({ category, setShow, show }) => {
-  const { user } = useGlobalState();
+  const user = JSON.parse(localStorage.getItem("user"));
   const { projectId } = useParams();
   const [categoryName, setCategoryName] = useState(category?.name);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const queryClient = useQueryClient();
+
   const {
     isOpen: isOpen1,
     onOpen: onOpen1,
@@ -90,6 +90,20 @@ const Category = ({ category, setShow, show }) => {
       console.error("Error deleting category:", error);
     }
   };
+
+  const editMutation = useMutation({
+    mutationFn: handleUpdate,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["categories", projectId]);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: handleDelete,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["categories", projectId]);
+    },
+  });
 
   return (
     <>
@@ -219,7 +233,7 @@ const Category = ({ category, setShow, show }) => {
         type="Save"
         isOpen={isOpen}
         onClose={onClose}
-        handleClick={handleUpdate}
+        handleClick={editMutation.mutate}
         categoryName={categoryName}
         handleChange={handleChange}
       />
@@ -259,7 +273,7 @@ const Category = ({ category, setShow, show }) => {
                 },
               }}
               onClick={() => {
-                handleDelete();
+                deleteMutation.mutate();
               }}
             >
               Delete
