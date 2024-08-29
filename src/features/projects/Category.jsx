@@ -26,6 +26,7 @@ import { db } from "../../firebase";
 import CommonCategoryModal from "./CommonCategoryModal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import CreateTask from "../tasks/CreateTask";
+import { DeleteModal } from "../../components";
 
 const Category = ({ category }) => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -293,65 +294,13 @@ const Category = ({ category }) => {
         categoryName={categoryName}
         handleChange={handleChange}
       />
-      {/* Delete confirmation modal */}
-      <Modal isOpen={isOpen1} onClose={onClose1} size="xs">
-        <ModalOverlay />
-        <ModalContent
-          sx={{
-            p: 5,
-            gap: 3,
-            bgColor: "#272A30",
-          }}
-        >
-          <Text
-            sx={{
-              color: "#D3D3D6",
-              mb: 5,
-            }}
-            fontSize="md"
-          >
-            Are you sure you want to delete <strong>{category?.name}</strong>?
-            If so then move all the notes to any other category.
-          </Text>
-          <Flex
-            direction="row"
-            alignItems="center"
-            justifyContent="end"
-            gap={3}
-          >
-            <Button
-              sx={{
-                bgColor: "#272A30",
-                color: "gray.50",
-                _hover: {
-                  bgColor: "#272A30",
-                  opacity: 0.8,
-                },
-              }}
-              onClick={() => {
-                deleteMutation.mutate();
-              }}
-            >
-              Delete
-            </Button>
-            <Button
-              sx={{
-                bgColor: "#7259C6",
-                color: "gray.50",
-                _hover: {
-                  bgColor: "#7259C6",
-                  opacity: 0.8,
-                },
-              }}
-              onClick={() => {
-                onClose1();
-              }}
-            >
-              Back
-            </Button>
-          </Flex>
-        </ModalContent>
-      </Modal>
+
+      <DeleteModal
+        handleClick={deleteMutation.mutate}
+        isOpen1={isOpen1}
+        onClose1={onClose1}
+        text={`Are you sure you want to delete the category "${category?.name}"? If so then move all the notes to any other category.`}
+      />
     </>
   );
 };

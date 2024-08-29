@@ -4,3 +4,4 @@ export { default as Layout } from "./Layout";
 export { default as CommonModal } from "./CommonModal";
 export { default as Loading } from "./Loading";
 export { default as Searchbar } from "./Searchbar";
+export { default as DeleteModal } from "./DeleteModal";

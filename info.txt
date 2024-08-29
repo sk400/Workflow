@@ -35,10 +35,12 @@ Update
 
 
 
-- labels page
-- CRUD on labels and filteration
-- Email and password authentication with forgot password 
+
+- add labels to createTask 
+- filteration
 - Drag and drop
+- Email and password authentication with forgot password 
+
 - Bin tasks and projects (separate)
 - fonts
 - user button to in small sidebar
@@ -145,6 +147,13 @@ d
 
 - create task show state (ui)
 - prefetch queries
+
+- labels page
+  - c
+  - r
+  - color customization of label
+  - u*
+  - d
 
 ideas
 --------
