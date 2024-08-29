@@ -66,7 +66,32 @@ const CreateCategory = () => {
 
   const mutationCreate = useMutation({
     mutationFn: handleClick,
-    onSuccess: () => {
+    onMutate: () => {
+      queryClient.cancelQueries({ queryKey: ["categories", projectId] });
+
+      const previousCategories = queryClient.getQueryData([
+        "categories",
+        projectId,
+      ]);
+
+      queryClient.setQueryData(["categories", projectId], (oldCategories) => [
+        ...oldCategories,
+        {
+          name: categoryName,
+          id: Date.now(),
+          tasks: [],
+        },
+      ]);
+
+      return { previousCategories };
+    },
+    onError: (context) => {
+      queryClient.setQueryData(
+        ["categories", projectId],
+        context.previousCategories
+      );
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["categories", projectId] });
     },
   });

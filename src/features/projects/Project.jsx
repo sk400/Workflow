@@ -13,7 +13,7 @@ import {
   CardBody,
 } from "@chakra-ui/react";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { CommonModal } from "../../components";
@@ -24,7 +24,7 @@ const Project = ({ item }) => {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [projectInfo, setProjectInfo] = useState(item);
-
+  const { pathname } = useLocation();
   const user = JSON.parse(localStorage.getItem("user"));
 
   /**
@@ -60,7 +60,28 @@ const Project = ({ item }) => {
 
   const editMutation = useMutation({
     mutationFn: (data) => updateProject(data),
-    onSuccess: () => {
+    onMutate: () => {
+      queryClient.cancelQueries({ queryKey: ["projects"] });
+
+      const previousProjects = queryClient.getQueryData(["projects"]);
+
+      queryClient.setQueryData(["projects"], (old) => {
+        const updatedOld = old?.map((project) => {
+          if (project?.id === item?.id) {
+            return { ...projectInfo };
+          }
+          return project;
+        });
+
+        return updatedOld;
+      });
+
+      return { previousProjects };
+    },
+    onError: (context) => {
+      queryClient.setQueryData(["projects"], context.previousProjects);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       queryClient.invalidateQueries({ queryKey: ["bin", "projects"] });
     },
@@ -68,11 +89,35 @@ const Project = ({ item }) => {
 
   const deleteMutation = useMutation({
     mutationFn: (data) => updateProject(data),
-    onSuccess: () => {
+    onMutate: () => {
+      queryClient.cancelQueries({ queryKey: ["projects"] });
+      queryClient.cancelQueries({ queryKey: ["bin", "projects"] });
+
+      const previousProjects = queryClient.getQueryData(["projects"]);
+      const previousBinProjects = queryClient.getQueryData(["bin", "projects"]);
+
+      const inHome = pathname === "/";
+      queryClient.setQueryData(
+        inHome ? ["projects"] : ["bin", "projects"],
+        (old) => old?.filter((project) => project?.id !== item?.id)
+      );
+
+      return { previousProjects, previousBinProjects };
+    },
+    onError: (context) => {
+      queryClient.setQueryData(["projects"], context.previousProjects);
+      queryClient.setQueryData(
+        ["bin", "projects"],
+        context.previousBinProjects
+      );
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       queryClient.invalidateQueries({ queryKey: ["bin", "projects"] });
     },
   });
+
+  // remove edit option in bin page
 
   return (
     <>

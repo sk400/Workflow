@@ -6,20 +6,8 @@ Features
 4. Bin for deleted todos
 
 
-
-
-
-
-
-
-
-Add a favicon
-
-
-
-
-
-
+Todo
+-----
 Add to fiverr
 Add to linkedin featured section
 Add to portfolio
@@ -44,38 +32,6 @@ Update
 --------------------
 
 
-implement react query
-
-- CRUD on projects
-
-r *
-c
-u
-d
-
-- CRUD on categories
-
-r
-c
-u
-d
-
-- CRUD on tasks
-
-r
-c
-u
-d
-
-- bin page
-- remove unused code
-- commit changes
-- optimistic update
-- create task show state
-- prefetch queries
-
-
-
 
 
 
@@ -83,11 +39,19 @@ d
 - CRUD on labels and filteration
 - Email and password authentication with forgot password 
 - Drag and drop
-
-- Change colors of the UI (add a global state to customise the colors)
-- Bin tasks
+- Bin tasks and projects (separate)
 - fonts
 - user button to in small sidebar
+- Merge to main branch
+
+
+
+Next version
+------------
+
+- Change colors of the UI (add a global state to customise the colors)
+
+
 
 
 
@@ -146,6 +110,41 @@ Completed
 - Sign out button in drawer
 - Category buttons ui
 
+implement react query
+
+- CRUD on projects
+
+r *
+c
+u
+d
+
+- CRUD on categories
+
+r
+c
+u
+d
+
+- CRUD on tasks
+
+r
+c
+u
+d
+
+- bin page
+- remove unused code
+- commit changes
+
+- optimistic update
+
+  - projects
+  - categories
+  - Tasks
+
+- create task show state (ui)
+- prefetch queries
 
 ideas
 --------

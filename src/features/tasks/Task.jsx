@@ -160,7 +160,47 @@ const Task = ({ task, categoryId }) => {
 
   const editMutation = useMutation({
     mutationFn: handleEdit,
-    onSuccess: () => {
+    onMutate: () => {
+      queryClient.cancelQueries(["categories", projectId]);
+
+      const previousCategories = queryClient.getQueryData([
+        "categories",
+        projectId,
+      ]);
+
+      queryClient.setQueryData(["categories", projectId], (oldCategories) => {
+        const updatedCategories = oldCategories?.map((category) => {
+          if (category?.id === categoryId) {
+            return {
+              ...category,
+              tasks: category?.tasks?.map((item) => {
+                if (task?.id === item?.id) {
+                  return {
+                    ...taskData,
+                    imageUrl,
+                  };
+                }
+                return item;
+              }),
+            };
+          }
+          return category;
+        });
+
+        return updatedCategories;
+      });
+
+      onClose();
+
+      return { previousCategories };
+    },
+    onError: (context) => {
+      queryClient.setQueryData(
+        ["categories", projectId],
+        context?.previousCategories
+      );
+    },
+    onSettled: () => {
       queryClient.invalidateQueries(["categories", projectId]);
     },
   });

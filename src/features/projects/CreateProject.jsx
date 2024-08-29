@@ -51,7 +51,20 @@ const CreateProject = ({ sidebar }) => {
 
   const mutation = useMutation({
     mutationFn: createProjectOnFirestore,
-    onSuccess: () => {
+    onMutate: () => {
+      queryClient.cancelQueries({ queryKey: ["projects"] });
+      const previousProjects = queryClient.getQueryData(["projects"]);
+
+      queryClient.setQueryData(["projects"], (old) => {
+        return [...old, { ...projectInfo, isDeleted: false, id: Date.now() }];
+      });
+
+      return { previousProjects };
+    },
+    onError: (context) => {
+      queryClient.setQueryData(["projects"], context.previousProjects);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });

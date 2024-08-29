@@ -21,46 +21,15 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import Category from "../features/projects/Category";
 import Tasks from "../features/tasks/Tasks";
 import CreateCategory from "../features/projects/CreateCategory";
-import CreateTask from "../features/tasks/CreateTask";
-import { useState } from "react";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "../firebase";
 import { useQuery } from "@tanstack/react-query";
+import { getCategories } from "../lib/functions";
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
 
   const user = JSON.parse(localStorage.getItem("user"));
-
-  const [show, setShow] = useState(false);
-
-  // if (loading) return <Loading />;
-
-  const getCategories = async () => {
-    try {
-      const q = query(
-        collection(
-          db,
-          "users",
-          user?.email,
-          "projects",
-          projectId,
-          "categories"
-        ),
-        orderBy("createdAt", "asc")
-      );
-
-      const querySnapshot = await getDocs(q);
-      const categories = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      return categories;
-    } catch (error) {
-      console.error("Error getting document:", error);
-    }
-  };
 
   const {
     data: categories,
@@ -68,7 +37,7 @@ const ProjectDetails = () => {
     error,
   } = useQuery({
     queryKey: ["categories", projectId],
-    queryFn: getCategories,
+    queryFn: () => getCategories(projectId),
   });
 
   if (error) {
@@ -222,10 +191,8 @@ const ProjectDetails = () => {
           {categories?.map((category) => (
             <WrapItem key={category?.id}>
               <Box>
-                <Category category={category} setShow={setShow} show={show} />
-                {show && (
-                  <CreateTask setShow={setShow} categoryId={category?.id} />
-                )}
+                <Category category={category} />
+
                 <Tasks tasks={category?.tasks} categoryId={category?.id} />
               </Box>
             </WrapItem>

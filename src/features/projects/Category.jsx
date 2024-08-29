@@ -24,13 +24,14 @@ import { useState } from "react";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import CommonCategoryModal from "./CommonCategoryModal";
-import { IoClose } from "react-icons/io5";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import CreateTask from "../tasks/CreateTask";
 
-const Category = ({ category, setShow, show }) => {
+const Category = ({ category }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const { projectId } = useParams();
   const [categoryName, setCategoryName] = useState(category?.name);
+  const [show, setShow] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const queryClient = useQueryClient();
 
@@ -93,142 +94,197 @@ const Category = ({ category, setShow, show }) => {
 
   const editMutation = useMutation({
     mutationFn: handleUpdate,
-    onSuccess: () => {
+    onMutate: () => {
+      queryClient.cancelQueries(["categories", projectId]);
+
+      const previousCategories = queryClient.getQueryData([
+        "categories",
+        projectId,
+      ]);
+
+      queryClient.setQueryData(["categories", projectId], (oldCategories) => {
+        const updatedCategories = oldCategories.map((oldCategory) => {
+          if (oldCategory?.id === category?.id) {
+            return { ...oldCategory, name: categoryName };
+          }
+          return oldCategory;
+        });
+
+        return updatedCategories;
+      });
+
+      return { previousCategories };
+    },
+    onError: (context) => {
+      queryClient.setQueryData(
+        ["categories", projectId],
+        context?.previousCategories
+      );
+    },
+    onSettled: () => {
       queryClient.invalidateQueries(["categories", projectId]);
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: handleDelete,
-    onSuccess: () => {
+    onMutate: () => {
+      queryClient.cancelQueries(["categories", projectId]);
+
+      const previousCategories = queryClient.getQueryData([
+        "categories",
+        projectId,
+      ]);
+
+      queryClient.setQueryData(["categories", projectId], (oldCategories) => {
+        const updatedCategories = oldCategories.filter(
+          (oldCategory) => oldCategory?.id !== category?.id
+        );
+
+        return updatedCategories;
+      });
+
+      return { previousCategories };
+    },
+    onError: (context) => {
+      queryClient.setQueryData(
+        ["categories", projectId],
+        context?.previousCategories
+      );
+    },
+    onSettled: () => {
       queryClient.invalidateQueries(["categories", projectId]);
     },
   });
 
   return (
     <>
-      <Flex
-        alignItems="center"
-        // justifyContent="space-between"
-        sx={{
-          color: "gray.50",
-          pl: 3,
-          bgColor: "#20212C",
-          borderRadius: "10px",
-          maxWidth: "300px",
-          height: "55px",
-        }}
-      >
-        <Text
+      <Box>
+        {/* Category content */}
+        <Flex
+          alignItems="center"
+          // justifyContent="space-between"
           sx={{
-            textTransform: "uppercase",
+            color: "gray.50",
+            pl: 3,
+            bgColor: "#20212C",
+            borderRadius: "10px",
+            maxWidth: "300px",
+            height: "55px",
           }}
-          fontSize="sm"
-          letterSpacing="1px"
         >
-          {category?.name}
-        </Text>
-        <Spacer />
-
-        <HStack gap={3} justifySelf="flex-end" height="100%">
-          <Center
+          <Text
             sx={{
-              width: "25px",
-              height: "25px",
-              borderRadius: "50%",
-              bgColor: "#7259C6",
+              textTransform: "uppercase",
             }}
+            fontSize="sm"
+            letterSpacing="1px"
           >
-            <Text fontSize="12px" fontWeight="semibold">
-              {category?.tasks?.length}
-            </Text>
-          </Center>
-          <Image
-            src={addProjectIcon}
-            objectFit={"cover"}
-            sx={{
-              width: "20px",
-              height: "20px",
-              cursor: "pointer",
-            }}
-            onClick={() => setShow((prev) => !prev)}
-          />
+            {category?.name}
+          </Text>
+          <Spacer />
 
-          <Menu>
-            <MenuButton
+          <HStack gap={3} justifySelf="flex-end" height="100%">
+            <Center
               sx={{
-                bgColor: "#20212C",
-                color: "#D3D3D6",
-
-                _hover: {
-                  bgColor: "#272A30",
-                },
-                borderRadius: "lg",
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
+                width: "25px",
+                height: "25px",
+                borderRadius: "50%",
+                bgColor: "#7259C6",
               }}
             >
-              <Image
-                src={moreIcon}
-                sx={{
-                  width: "25px",
-                  height: "20px",
-                  cursor: "pointer",
-                }}
-              />
-            </MenuButton>
-            <MenuList
+              <Text fontSize="12px" fontWeight="semibold">
+                {category?.tasks?.length}
+              </Text>
+            </Center>
+            <Image
+              src={addProjectIcon}
+              objectFit={"cover"}
               sx={{
-                bgColor: "#272A30",
-                border: "none",
+                width: "20px",
+                height: "20px",
+                cursor: "pointer",
               }}
-            >
-              <MenuItem
+              onClick={() => setShow((prev) => !prev)}
+            />
+
+            <Menu>
+              <MenuButton
                 sx={{
-                  color: "gray.50",
-                  bgColor: "#272A30",
+                  bgColor: "#20212C",
+                  color: "#D3D3D6",
+
                   _hover: {
-                    bgColor: "#7259C6",
+                    bgColor: "#272A30",
                   },
+                  borderRadius: "lg",
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onOpen();
                 }}
               >
-                Edit
-              </MenuItem>
-              <MenuItem
+                <Image
+                  src={moreIcon}
+                  sx={{
+                    width: "25px",
+                    height: "20px",
+                    cursor: "pointer",
+                  }}
+                />
+              </MenuButton>
+              <MenuList
                 sx={{
-                  color: "gray.50",
                   bgColor: "#272A30",
-                  _hover: {
-                    bgColor: "#7259C6",
-                  },
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpen1();
+                  border: "none",
                 }}
               >
-                Delete
-              </MenuItem>
-            </MenuList>
-          </Menu>
-          <Box
-            sx={{
-              height: "80%",
-              pl: 1,
-              py: 1,
-              borderRadius: "md",
-              bgColor: "#7259C6",
-              justifySelf: "end",
-            }}
-          ></Box>
-        </HStack>
-      </Flex>
-
+                <MenuItem
+                  sx={{
+                    color: "gray.50",
+                    bgColor: "#272A30",
+                    _hover: {
+                      bgColor: "#7259C6",
+                    },
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpen();
+                  }}
+                >
+                  Edit
+                </MenuItem>
+                <MenuItem
+                  sx={{
+                    color: "gray.50",
+                    bgColor: "#272A30",
+                    _hover: {
+                      bgColor: "#7259C6",
+                    },
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpen1();
+                  }}
+                >
+                  Delete
+                </MenuItem>
+              </MenuList>
+            </Menu>
+            <Box
+              sx={{
+                height: "80%",
+                pl: 1,
+                py: 1,
+                borderRadius: "md",
+                bgColor: "#7259C6",
+                justifySelf: "end",
+              }}
+            ></Box>
+          </HStack>
+        </Flex>
+        {/* Create task component */}
+        {show && <CreateTask setShow={setShow} categoryId={category?.id} />}
+      </Box>
       <CommonCategoryModal
         type="Save"
         isOpen={isOpen}

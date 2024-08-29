@@ -7,7 +7,7 @@ const Tasks = ({ tasks, categoryId }) => {
     <Flex direction="column" width="300px">
       {/* Task */}
       {tasks?.map((task) => (
-        <Task task={task} key={task?.createdAt} categoryId={categoryId} />
+        <Task task={task} key={task?.id} categoryId={categoryId} />
       ))}
     </Flex>
   );
