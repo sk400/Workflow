@@ -44,6 +44,7 @@ Update
 - Bin tasks and projects (separate)
 - fonts
 - user button to in small sidebar
+- Remove unused code
 - Merge to main branch
 
 

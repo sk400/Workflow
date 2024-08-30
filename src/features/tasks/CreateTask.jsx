@@ -7,8 +7,13 @@ import {
   Icon,
   Image,
   Input,
+  Tag,
+  TagLabel,
+  TagRightIcon,
   Text,
   Textarea,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 
 import { IoClose, IoCloudUploadSharp } from "react-icons/io5";
@@ -17,19 +22,30 @@ import { createReference, db } from "../../firebase";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
 import { useParams } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getLabels } from "../../lib/functions";
+import { MdOutlineCheck } from "react-icons/md";
 
 const CreateTask = ({ categoryId, setShow }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const { projectId } = useParams();
-  const [imageUrl, setImageUrl] = useState("");
+
   const [taskData, setTaskData] = useState({
     title: "",
     description: "",
     deadline: "",
+    imageUrl: "",
+    selectedLabel: null,
   });
 
   const queryClient = useQueryClient();
+
+  const { data: labels } = useQuery({
+    queryKey: ["labels"],
+    queryFn: getLabels,
+  });
+
+  console.log(labels);
 
   const uploadImage = (e) => {
     const file = e.target.files[0];
@@ -50,7 +66,7 @@ const CreateTask = ({ categoryId, setShow }) => {
 
       uploadBytes(imageRef, file).then((snapshot) => {
         getDownloadURL(snapshot.ref).then((url) => {
-          setImageUrl(url);
+          setTaskData((prev) => ({ ...prev, imageUrl: url }));
         });
       });
 
@@ -68,7 +84,8 @@ const CreateTask = ({ categoryId, setShow }) => {
     if (
       !taskData?.title?.length ||
       !taskData?.description?.length ||
-      !taskData?.deadline?.length
+      !taskData?.deadline?.length ||
+      !taskData?.selectedLabel?.id
     ) {
       alert("Task name or description cannot be empty");
       return;
@@ -92,7 +109,16 @@ const CreateTask = ({ categoryId, setShow }) => {
       const newTask = {
         ...taskData,
         id: Date.now(),
-        imageUrl,
+        imageUrl: taskData?.imageUrl,
+        label: {
+          ref: doc(
+            db,
+            "users",
+            user?.email,
+            "labels",
+            taskData?.selectedLabel?.id
+          ),
+        },
         createdAt: Date.now(),
       };
       setShow(false);
@@ -100,8 +126,13 @@ const CreateTask = ({ categoryId, setShow }) => {
         tasks: [...projectData?.tasks, newTask],
       });
 
-      setTaskData({ title: "", description: "" });
-      setImageUrl("");
+      setTaskData({
+        title: "",
+        description: "",
+        deadline: "",
+        imageUrl: "",
+        selectedLabel: null,
+      });
 
       console.log("Task added successfully");
     } catch (error) {
@@ -125,7 +156,7 @@ const CreateTask = ({ categoryId, setShow }) => {
               ...oldCategory,
               tasks: [
                 ...oldCategory.tasks,
-                { ...taskData, imageUrl, id: Date.now() },
+                { ...taskData, imageUrl: taskData?.imageUrl, id: Date.now() },
               ],
             };
           }
@@ -229,10 +260,10 @@ const CreateTask = ({ categoryId, setShow }) => {
 
       {/* Image upload button */}
 
-      {imageUrl ? (
+      {taskData?.imageUrl ? (
         <Box sx={{ position: "relative", width: "100%" }}>
           <Image
-            src={imageUrl}
+            src={taskData?.imageUrl}
             alt="image"
             objectFit="cover"
             borderRadius="14px"
@@ -248,7 +279,7 @@ const CreateTask = ({ categoryId, setShow }) => {
               right: 3,
               cursor: "pointer",
             }}
-            onClick={() => setImageUrl(null)}
+            onClick={() => setTaskData((prev) => ({ ...prev, imageUrl: "" }))}
           />
         </Box>
       ) : (
@@ -287,6 +318,29 @@ const CreateTask = ({ categoryId, setShow }) => {
           </label>
         </>
       )}
+
+      <Wrap>
+        {labels?.map((label) => (
+          <WrapItem key={label?.id}>
+            <Tag
+              sx={{
+                bgColor: label?.background,
+                color: "gray.100",
+                cursor: "pointer",
+              }}
+              size="sm"
+              onClick={() =>
+                setTaskData((prev) => ({ ...prev, selectedLabel: label }))
+              }
+            >
+              <TagLabel> {label.name}</TagLabel>
+              {taskData?.selectedLabel?.id === label?.id && (
+                <TagRightIcon as={MdOutlineCheck} color="gray.100" />
+              )}
+            </Tag>
+          </WrapItem>
+        ))}
+      </Wrap>
 
       <Button
         sx={{

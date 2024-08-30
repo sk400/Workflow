@@ -19,6 +19,10 @@ import {
   Textarea,
   useDisclosure,
   HStack,
+  Wrap,
+  WrapItem,
+  TagLabel,
+  TagRightIcon,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { IoMdMore } from "react-icons/io";
@@ -27,15 +31,27 @@ import { createReference, db } from "../../firebase";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { IoClose, IoCloudUploadSharp } from "react-icons/io5";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchLabel, getLabels } from "../../lib/functions";
+import { MdOutlineCheck } from "react-icons/md";
 
 const Task = ({ task, categoryId }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const { projectId } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [imageUrl, setImageUrl] = useState(task?.imageUrl);
-  const [taskData, setTaskData] = useState(task);
+  const [taskData, setTaskData] = useState({ ...task });
+
   const queryClient = useQueryClient();
+
+  const { data: label } = useQuery({
+    queryKey: ["label", task?.label?.ref?.id],
+    queryFn: () => fetchLabel(task?.label?.ref),
+  });
+
+  const { data: labels } = useQuery({
+    queryKey: ["labels"],
+    queryFn: getLabels,
+  });
 
   const uploadImage = (e) => {
     const file = e.target.files[0];
@@ -56,7 +72,7 @@ const Task = ({ task, categoryId }) => {
 
       uploadBytes(imageRef, file).then((snapshot) => {
         getDownloadURL(snapshot.ref).then((url) => {
-          setImageUrl(url);
+          setTaskData((prev) => ({ ...prev, imageUrl: url }));
         });
       });
 
@@ -74,7 +90,8 @@ const Task = ({ task, categoryId }) => {
     if (
       !taskData?.title?.length ||
       !taskData?.description?.length ||
-      !taskData?.deadline?.length
+      !taskData?.deadline?.length ||
+      !taskData?.selectedLabel?.id
     ) {
       alert("Task name or description cannot be empty");
       return;
@@ -101,7 +118,15 @@ const Task = ({ task, categoryId }) => {
         if (item?.id === task?.id) {
           return {
             ...taskData,
-            imageUrl,
+            label: {
+              ref: doc(
+                db,
+                "users",
+                user?.email,
+                "labels",
+                taskData?.selectedLabel?.id
+              ),
+            },
           };
         }
         return item;
@@ -149,9 +174,6 @@ const Task = ({ task, categoryId }) => {
         tasks: filteredArray,
       });
 
-      setTaskData({ title: "", description: "", deadline: "" });
-      setImageUrl("");
-
       console.log("Task deleted successfully");
     } catch (error) {
       console.log(error);
@@ -177,7 +199,6 @@ const Task = ({ task, categoryId }) => {
                 if (task?.id === item?.id) {
                   return {
                     ...taskData,
-                    imageUrl,
                   };
                 }
                 return item;
@@ -202,6 +223,7 @@ const Task = ({ task, categoryId }) => {
     },
     onSettled: () => {
       queryClient.invalidateQueries(["categories", projectId]);
+      queryClient.invalidateQueries(["label", task?.label?.ref?.id]);
     },
   });
 
@@ -229,15 +251,27 @@ const Task = ({ task, categoryId }) => {
         }}
       >
         <Flex>
-          <Tag
-            sx={{
-              borderRadius: "2xl",
-              bgColor: "#7259C6",
-              color: "gray.50",
-            }}
-          >
-            Testing
-          </Tag>
+          {label ? (
+            <Tag
+              sx={{
+                borderRadius: "2xl",
+                bgColor: label?.background,
+                color: "gray.50",
+              }}
+            >
+              {label?.name}
+            </Tag>
+          ) : (
+            <Tag
+              sx={{
+                borderRadius: "2xl",
+                bgColor: "#7259C6",
+                color: "gray.50",
+              }}
+            >
+              No label
+            </Tag>
+          )}
           <Spacer />
           <Text
             sx={{
@@ -409,10 +443,10 @@ const Task = ({ task, categoryId }) => {
 
           {/* Image upload button */}
 
-          {imageUrl ? (
+          {taskData?.imageUrl ? (
             <Box sx={{ position: "relative", width: "100%" }}>
               <Image
-                src={imageUrl}
+                src={taskData?.imageUrl}
                 alt="image"
                 objectFit="cover"
                 borderRadius="14px"
@@ -428,7 +462,9 @@ const Task = ({ task, categoryId }) => {
                   right: 3,
                   cursor: "pointer",
                 }}
-                onClick={() => setImageUrl(null)}
+                onClick={() =>
+                  setTaskData((prev) => ({ ...prev, imageUrl: "" }))
+                }
               />
             </Box>
           ) : (
@@ -467,6 +503,29 @@ const Task = ({ task, categoryId }) => {
               </label>
             </>
           )}
+
+          <Wrap>
+            {labels?.map((label) => (
+              <WrapItem key={label?.id}>
+                <Tag
+                  sx={{
+                    bgColor: label?.background,
+                    color: "gray.100",
+                    cursor: "pointer",
+                  }}
+                  size="sm"
+                  onClick={() =>
+                    setTaskData((prev) => ({ ...prev, selectedLabel: label }))
+                  }
+                >
+                  <TagLabel> {label.name}</TagLabel>
+                  {taskData?.selectedLabel?.id === label?.id && (
+                    <TagRightIcon as={MdOutlineCheck} color="gray.100" />
+                  )}
+                </Tag>
+              </WrapItem>
+            ))}
+          </Wrap>
 
           <Button
             sx={{

@@ -21,15 +21,12 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import Category from "../features/projects/Category";
 import Tasks from "../features/tasks/Tasks";
 import CreateCategory from "../features/projects/CreateCategory";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import { db } from "../firebase";
+
 import { useQuery } from "@tanstack/react-query";
 import { getCategories } from "../lib/functions";
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
-
-  const user = JSON.parse(localStorage.getItem("user"));
 
   const {
     data: categories,
