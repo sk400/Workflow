@@ -7,6 +7,7 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase";
 import CommonCategoryModal from "./CommonCategoryModal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useGlobalState } from "../../context";
 
 const CreateCategory = () => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -14,6 +15,7 @@ const CreateCategory = () => {
   const [categoryName, setCategoryName] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const queryClient = useQueryClient();
+  const { setFilteredCategories, setSelectedLabel } = useGlobalState();
 
   /**
    * Handles the creation of a new category when the user clicks the "Create"
@@ -73,6 +75,9 @@ const CreateCategory = () => {
         "categories",
         projectId,
       ]);
+
+      setFilteredCategories(null);
+      setSelectedLabel(null);
 
       queryClient.setQueryData(["categories", projectId], (oldCategories) => [
         ...oldCategories,

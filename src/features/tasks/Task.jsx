@@ -27,25 +27,30 @@ import {
 import React, { useState } from "react";
 import { IoMdMore } from "react-icons/io";
 import { useParams } from "react-router-dom";
-import { createReference, db } from "../../firebase";
+import { createLabelReference, createReference, db } from "../../firebase";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { IoClose, IoCloudUploadSharp } from "react-icons/io5";
+import { IoCheckmarkDone, IoClose, IoCloudUploadSharp } from "react-icons/io5";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchLabel, getLabels } from "../../lib/functions";
 import { MdOutlineCheck } from "react-icons/md";
+import { Draggable } from "react-beautiful-dnd";
+import { useGlobalState } from "../../context";
 
-const Task = ({ task, categoryId }) => {
+const Task = ({ task, categoryId, index }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const { projectId } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [taskData, setTaskData] = useState({ ...task });
+  const { filteredCategories, setFilteredCategories } = useGlobalState();
+
+  // Title, Description, Deadline, Label, Image, isCompleted, isDeleted
 
   const queryClient = useQueryClient();
 
   const { data: label } = useQuery({
-    queryKey: ["label", task?.label?.ref?.id],
-    queryFn: () => fetchLabel(task?.label?.ref),
+    queryKey: ["label", task?.label?.id],
+    queryFn: () => fetchLabel(task?.label),
   });
 
   const { data: labels } = useQuery({
@@ -91,12 +96,13 @@ const Task = ({ task, categoryId }) => {
       !taskData?.title?.length ||
       !taskData?.description?.length ||
       !taskData?.deadline?.length ||
-      !taskData?.selectedLabel?.id
+      !taskData?.label?.id ||
+      !taskData?.id
     ) {
-      alert("Task name or description cannot be empty");
+      alert("Please enter atleast title, description, deadline and label.");
       return;
     }
-
+    onClose();
     try {
       const categoryRef = doc(
         db,
@@ -108,25 +114,16 @@ const Task = ({ task, categoryId }) => {
         categoryId
       );
 
-      const project = await getDoc(categoryRef);
+      const category = await getDoc(categoryRef);
 
-      const projectData = project.data();
+      const categoryData = category.data();
 
-      const array = [...projectData?.tasks];
+      const array = [...categoryData?.tasks];
 
       const updatedArray = array?.map((item) => {
         if (item?.id === task?.id) {
           return {
             ...taskData,
-            label: {
-              ref: doc(
-                db,
-                "users",
-                user?.email,
-                "labels",
-                taskData?.selectedLabel?.id
-              ),
-            },
           };
         }
         return item;
@@ -144,6 +141,39 @@ const Task = ({ task, categoryId }) => {
     }
   };
 
+  const changeCompletionStatus = async () => {
+    try {
+      const categoryRef = doc(
+        db,
+        "users",
+        user?.email,
+        "projects",
+        projectId,
+        "categories",
+        categoryId
+      );
+
+      const docSnap = await getDoc(categoryRef);
+      const tasks = docSnap.data()?.tasks;
+      const updatedTasks = tasks?.map((item) => {
+        if (item?.id === taskData?.id) {
+          return {
+            ...taskData,
+            isCompleted: !item?.isCompleted,
+          };
+        }
+        return item;
+      });
+
+      await updateDoc(categoryRef, {
+        tasks: updatedTasks,
+      });
+
+      console.log("Task completion status updated successfully");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // Temporary. It will be changed to "Add to bin"
 
   const handleDelete = async () => {
@@ -180,6 +210,8 @@ const Task = ({ task, categoryId }) => {
     }
   };
 
+  // Edit mutation
+
   const editMutation = useMutation({
     mutationFn: handleEdit,
     onMutate: () => {
@@ -190,6 +222,28 @@ const Task = ({ task, categoryId }) => {
         projectId,
       ]);
 
+      if (filteredCategories?.length) {
+        setFilteredCategories((prevCategories) => {
+          return prevCategories?.map((category) => {
+            if (category.id === categoryId) {
+              return {
+                ...category,
+                tasks: category?.tasks?.map((item) => {
+                  if (item?.id === task?.id) {
+                    return {
+                      ...taskData,
+                    };
+                  }
+                  return item;
+                }),
+              };
+            }
+
+            return category;
+          });
+        });
+      }
+
       queryClient.setQueryData(["categories", projectId], (oldCategories) => {
         const updatedCategories = oldCategories?.map((category) => {
           if (category?.id === categoryId) {
@@ -199,6 +253,86 @@ const Task = ({ task, categoryId }) => {
                 if (task?.id === item?.id) {
                   return {
                     ...taskData,
+                  };
+                }
+                return item;
+              }),
+            };
+          }
+          return category;
+        });
+
+        return updatedCategories;
+      });
+
+      return { previousCategories };
+    },
+    onError: (context) => {
+      queryClient.setQueryData(
+        ["categories", projectId],
+        context?.previousCategories
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["categories", projectId]);
+      queryClient.invalidateQueries(["label", task?.label?.ref?.id]);
+    },
+  });
+
+  // Delete mutation
+
+  const deleteMutation = useMutation({
+    mutationFn: handleDelete,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["categories", projectId]);
+    },
+  });
+
+  // Completion mutation
+
+  const completionMutation = useMutation({
+    mutationFn: changeCompletionStatus,
+    onMutate: () => {
+      queryClient.cancelQueries(["categories", projectId]);
+
+      const previousCategories = queryClient.getQueryData([
+        "categories",
+        projectId,
+      ]);
+
+      if (filteredCategories?.length) {
+        setFilteredCategories((prevCategories) => {
+          return prevCategories?.map((category) => {
+            if (category.id === categoryId) {
+              return {
+                ...category,
+                tasks: category?.tasks?.map((item) => {
+                  if (item?.id === task?.id) {
+                    return {
+                      ...taskData,
+                      isCompleted: !item?.isCompleted,
+                    };
+                  }
+                  return item;
+                }),
+              };
+            }
+
+            return category;
+          });
+        });
+      }
+
+      queryClient.setQueryData(["categories", projectId], (oldCategories) => {
+        const updatedCategories = oldCategories?.map((category) => {
+          if (category?.id === categoryId) {
+            return {
+              ...category,
+              tasks: category?.tasks?.map((item) => {
+                if (task?.id === item?.id) {
+                  return {
+                    ...taskData,
+                    isCompleted: !item?.isCompleted,
                   };
                 }
                 return item;
@@ -223,148 +357,158 @@ const Task = ({ task, categoryId }) => {
     },
     onSettled: () => {
       queryClient.invalidateQueries(["categories", projectId]);
-      queryClient.invalidateQueries(["label", task?.label?.ref?.id]);
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: handleDelete,
-    onSuccess: () => {
-      queryClient.invalidateQueries(["categories", projectId]);
-    },
+  const date = new Date(task?.deadline);
+
+  const formattedDate = date.toLocaleString("default", {
+    month: "short",
+    day: "numeric",
   });
 
   return (
     <>
-      <Box
-        sx={{
-          bgColor: "#20212C",
-          color: "#D3D3D6",
-          mt: 5,
-          p: 3,
-          borderRadius: "15px",
-          display: "flex",
-          flexDirection: "column",
-          position: "relative",
-          gap: 4,
-          width: "300px",
-        }}
-      >
-        <Flex>
-          {label ? (
-            <Tag
-              sx={{
-                borderRadius: "2xl",
-                bgColor: label?.background,
-                color: "gray.50",
-              }}
-            >
-              {label?.name}
-            </Tag>
-          ) : (
-            <Tag
-              sx={{
-                borderRadius: "2xl",
-                bgColor: "#7259C6",
-                color: "gray.50",
-              }}
-            >
-              No label
-            </Tag>
-          )}
-          <Spacer />
-          <Text
-            sx={{
-              fontWeight: "medium",
-            }}
-          >
-            Sep 8
-          </Text>
-        </Flex>
-        <Heading size="sm" fontWeight="medium">
-          {task?.title}
-        </Heading>
-        {task?.imageUrl && (
-          <Image
-            src={task?.imageUrl}
-            alt="image"
-            objectFit="cover"
-            borderRadius="14px"
-          />
-        )}
-        <Text fontSize="xs">{task?.description}</Text>
-        <Menu>
-          <MenuButton
+      <Draggable draggableId={task?.id?.toString()} index={index}>
+        {(provided) => (
+          <Box
+            {...provided.draggableProps}
+            ref={provided.innerRef}
+            {...provided.dragHandleProps}
             sx={{
               bgColor: "#20212C",
               color: "#D3D3D6",
-              position: "absolute",
-              bottom: 2,
-              right: 2,
-              _hover: {
-                bgColor: "#272A30",
-              },
-              borderRadius: "lg",
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
+              mt: 5,
+              p: 3,
+              borderRadius: "15px",
+              display: "flex",
+              flexDirection: "column",
+              position: "relative",
+              gap: 4,
+              width: "300px",
             }}
           >
-            <Icon as={IoMdMore} />
-          </MenuButton>
-          <MenuList
-            sx={{
-              bgColor: "#272A30",
-              border: "none",
-            }}
-          >
-            <MenuItem
-              sx={{
-                color: "gray.50",
-                bgColor: "#272A30",
-                _hover: {
-                  bgColor: "#7259C6",
-                },
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpen();
-              }}
-            >
-              Edit
-            </MenuItem>
-            <MenuItem
-              sx={{
-                color: "gray.50",
-                bgColor: "#272A30",
-                _hover: {
-                  bgColor: "#7259C6",
-                },
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                deleteMutation.mutate();
-              }}
-            >
-              Add to bin
-            </MenuItem>
-            <MenuItem
-              sx={{
-                color: "gray.50",
-                bgColor: "#272A30",
-                _hover: {
-                  bgColor: "#7259C6",
-                },
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              Mark as completed
-            </MenuItem>
-          </MenuList>
-        </Menu>
-      </Box>
+            <Flex>
+              {label ? (
+                <Tag
+                  sx={{
+                    borderRadius: "2xl",
+                    bgColor: label?.background,
+                    color: "gray.50",
+                  }}
+                >
+                  {label?.name}
+                </Tag>
+              ) : (
+                <Tag
+                  sx={{
+                    borderRadius: "2xl",
+                    bgColor: "#7259C6",
+                    color: "gray.50",
+                  }}
+                >
+                  No label
+                </Tag>
+              )}
+              <Spacer />
+              <Text
+                sx={{
+                  fontWeight: "medium",
+                }}
+              >
+                {formattedDate}
+              </Text>
+            </Flex>
+            <Heading size="sm" fontWeight="medium">
+              {task?.title}{" "}
+              {task?.isCompleted && (
+                <Icon as={IoCheckmarkDone} color="#48CFCB" boxSize={5} />
+              )}
+            </Heading>
+            {task?.imageUrl && (
+              <Image
+                src={task?.imageUrl}
+                alt="image"
+                objectFit="cover"
+                borderRadius="14px"
+              />
+            )}
+            <Text fontSize="xs">{task?.description}</Text>
+            <Menu>
+              <MenuButton
+                sx={{
+                  bgColor: "#20212C",
+                  color: "#D3D3D6",
+                  position: "absolute",
+                  bottom: 2,
+                  right: 2,
+                  _hover: {
+                    bgColor: "#272A30",
+                  },
+                  borderRadius: "lg",
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                <Icon as={IoMdMore} />
+              </MenuButton>
+              <MenuList
+                sx={{
+                  bgColor: "#272A30",
+                  border: "none",
+                }}
+              >
+                <MenuItem
+                  sx={{
+                    color: "gray.50",
+                    bgColor: "#272A30",
+                    _hover: {
+                      bgColor: "#7259C6",
+                    },
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpen();
+                  }}
+                >
+                  Edit
+                </MenuItem>
+                <MenuItem
+                  sx={{
+                    color: "gray.50",
+                    bgColor: "#272A30",
+                    _hover: {
+                      bgColor: "#7259C6",
+                    },
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteMutation.mutate();
+                  }}
+                >
+                  Add to bin
+                </MenuItem>
+                <MenuItem
+                  sx={{
+                    color: "gray.50",
+                    bgColor: "#272A30",
+                    _hover: {
+                      bgColor: "#7259C6",
+                    },
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    completionMutation.mutate();
+                  }}
+                >
+                  Mark as {task?.isCompleted ? "Uncompleted" : "Completed"}
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </Box>
+        )}
+      </Draggable>
 
       {/* Edit Modal */}
       <Modal isOpen={isOpen} onClose={onClose} size="xs">
@@ -515,11 +659,14 @@ const Task = ({ task, categoryId }) => {
                   }}
                   size="sm"
                   onClick={() =>
-                    setTaskData((prev) => ({ ...prev, selectedLabel: label }))
+                    setTaskData((prev) => ({
+                      ...prev,
+                      label: createLabelReference(label?.id),
+                    }))
                   }
                 >
                   <TagLabel> {label.name}</TagLabel>
-                  {taskData?.selectedLabel?.id === label?.id && (
+                  {taskData?.label?.id === label?.id && (
                     <TagRightIcon as={MdOutlineCheck} color="gray.100" />
                   )}
                 </Tag>

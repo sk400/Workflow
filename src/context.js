@@ -3,13 +3,16 @@ const { createContext, useContext, useState } = require("react");
 const App = createContext();
 
 export const Provider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [filteredCategories, setFilteredCategories] = useState(null);
+  const [selectedLabel, setSelectedLabel] = useState(null);
 
   return (
     <App.Provider
       value={{
-        user,
-        setUser,
+        filteredCategories,
+        setFilteredCategories,
+        selectedLabel,
+        setSelectedLabel,
       }}
     >
       {children}

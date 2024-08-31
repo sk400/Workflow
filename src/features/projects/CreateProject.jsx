@@ -6,13 +6,16 @@ import { CommonModal } from "../../components";
 import addProject from "../../assets/add-project.png";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useGlobalState } from "../../context";
+import { useNavigate } from "react-router-dom";
 
 const CreateProject = ({ sidebar }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [projectInfo, setProjectInfo] = useState({ name: "", description: "" });
   const user = JSON.parse(localStorage.getItem("user"));
-
+  const { setFilteredCategories, setSelectedLabel } = useGlobalState();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   /**
    * Asynchronously creates a new project in the Firebase Firestore database.
    * The project is added to the user's collection of projects.
@@ -39,6 +42,7 @@ const CreateProject = ({ sidebar }) => {
         // Add the current timestamp to the createdAt field of the document
         createdAt: serverTimestamp(),
       });
+
       // Log a success message to the console
       console.log("Project created successfully");
       setProjectInfo({ name: "", description: "" });
@@ -54,6 +58,10 @@ const CreateProject = ({ sidebar }) => {
     onMutate: () => {
       queryClient.cancelQueries({ queryKey: ["projects"] });
       const previousProjects = queryClient.getQueryData(["projects"]);
+
+      setFilteredCategories(null);
+      setSelectedLabel(null);
+      navigate("/");
 
       queryClient.setQueryData(["projects"], (old) => {
         return [...old, { ...projectInfo, isDeleted: false, id: Date.now() }];

@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { doc, getFirestore } from "firebase/firestore";
 import { getStorage, ref } from "firebase/storage";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -30,3 +30,6 @@ export const storage = getStorage(app);
 export const createReference = (name) => {
   return ref(storage, `images/${name}`);
 };
+
+export const createLabelReference = ({ id, user }) =>
+  doc(db, "users", user?.email, "labels", id);

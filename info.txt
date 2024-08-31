@@ -36,14 +36,19 @@ Update
 
 
 
-- add labels to createTask 
-- filteration
-- Drag and drop
-- Email and password authentication with forgot password 
 
-- Bin tasks and projects (separate)
-- fonts
+
+
+
+- Filteration update
+- Bin tasks and projects (separate) and clear bin, update filtered category
+- Search tasks
+- Email and password authentication with forgot password 
 - user button to in small sidebar
+
+
+
+- fonts
 - Remove unused code
 - Merge to main branch
 
@@ -53,6 +58,8 @@ Next version
 ------------
 
 - Change colors of the UI (add a global state to customise the colors)
+- online status
+- remove unused packages
 
 
 
@@ -155,6 +162,13 @@ d
   - color customization of label
   - u*
   - d
+
+- add labels to createTask 
+- filteration
+- Completion state
+- Drag and drop
+- change selectedLabels from createTask and task
+- complete tasks filter for tasks
 
 ideas
 --------

@@ -17,7 +17,7 @@ export const getCategories = async (projectId) => {
     );
 
     const querySnapshot = await getDocs(q);
-    const categories = querySnapshot.docs.map((doc) => ({
+    const categories = querySnapshot?.docs?.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));

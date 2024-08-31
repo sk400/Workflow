@@ -18,24 +18,27 @@ import {
 
 import { IoClose, IoCloudUploadSharp } from "react-icons/io5";
 import { useState } from "react";
-import { createReference, db } from "../../firebase";
+import { createLabelReference, createReference, db } from "../../firebase";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
 import { useParams } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getLabels } from "../../lib/functions";
 import { MdOutlineCheck } from "react-icons/md";
+import { useGlobalState } from "../../context";
 
 const CreateTask = ({ categoryId, setShow }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const { projectId } = useParams();
-
+  const { setFilteredCategories, setSelectedLabel } = useGlobalState();
   const [taskData, setTaskData] = useState({
     title: "",
     description: "",
     deadline: "",
     imageUrl: "",
-    selectedLabel: null,
+    label: null,
+    isCompleted: false,
+    isDeleted: false,
   });
 
   const queryClient = useQueryClient();
@@ -44,8 +47,6 @@ const CreateTask = ({ categoryId, setShow }) => {
     queryKey: ["labels"],
     queryFn: getLabels,
   });
-
-  console.log(labels);
 
   const uploadImage = (e) => {
     const file = e.target.files[0];
@@ -85,13 +86,14 @@ const CreateTask = ({ categoryId, setShow }) => {
       !taskData?.title?.length ||
       !taskData?.description?.length ||
       !taskData?.deadline?.length ||
-      !taskData?.selectedLabel?.id
+      !taskData?.label?.id
     ) {
-      alert("Task name or description cannot be empty");
+      alert("Please enter atleast title, description, deadline and label");
       return;
     }
 
     try {
+      setShow(false);
       const categoryRef = doc(
         db,
         "users",
@@ -102,28 +104,17 @@ const CreateTask = ({ categoryId, setShow }) => {
         categoryId
       );
 
-      const project = await getDoc(categoryRef);
+      const category = await getDoc(categoryRef);
 
-      const projectData = project.data();
+      const categoryData = category.data();
 
       const newTask = {
-        ...taskData,
         id: Date.now(),
-        imageUrl: taskData?.imageUrl,
-        label: {
-          ref: doc(
-            db,
-            "users",
-            user?.email,
-            "labels",
-            taskData?.selectedLabel?.id
-          ),
-        },
-        createdAt: Date.now(),
+        ...taskData,
       };
       setShow(false);
       await updateDoc(categoryRef, {
-        tasks: [...projectData?.tasks, newTask],
+        tasks: [...categoryData?.tasks, newTask],
       });
 
       setTaskData({
@@ -131,7 +122,9 @@ const CreateTask = ({ categoryId, setShow }) => {
         description: "",
         deadline: "",
         imageUrl: "",
-        selectedLabel: null,
+        label: null,
+        isCompleted: false,
+        isDeleted: false,
       });
 
       console.log("Task added successfully");
@@ -149,15 +142,24 @@ const CreateTask = ({ categoryId, setShow }) => {
         queryKey: ["categories", projectId],
       });
 
+      setFilteredCategories(null);
+      setSelectedLabel(null);
+
       queryClient.setQueryData(["categories", projectId], (oldCategories) => {
+        if (
+          !taskData?.title?.length ||
+          !taskData?.description?.length ||
+          !taskData?.deadline?.length ||
+          !taskData?.label?.id
+        ) {
+          return oldCategories;
+        }
+
         const updatedCategories = oldCategories?.map((oldCategory) => {
           if (oldCategory.id === categoryId) {
             return {
               ...oldCategory,
-              tasks: [
-                ...oldCategory.tasks,
-                { ...taskData, imageUrl: taskData?.imageUrl, id: Date.now() },
-              ],
+              tasks: [...oldCategory.tasks, { ...taskData, id: Date.now() }],
             };
           }
           return oldCategory;
@@ -165,7 +167,7 @@ const CreateTask = ({ categoryId, setShow }) => {
 
         return updatedCategories;
       });
-      setShow(false);
+
       return { previousCategories };
     },
     onError: (context) => {
@@ -330,11 +332,14 @@ const CreateTask = ({ categoryId, setShow }) => {
               }}
               size="sm"
               onClick={() =>
-                setTaskData((prev) => ({ ...prev, selectedLabel: label }))
+                setTaskData((prev) => ({
+                  ...prev,
+                  label: createLabelReference({ id: label?.id, user }),
+                }))
               }
             >
               <TagLabel> {label.name}</TagLabel>
-              {taskData?.selectedLabel?.id === label?.id && (
+              {taskData?.label?.id === label?.id && (
                 <TagRightIcon as={MdOutlineCheck} color="gray.100" />
               )}
             </Tag>
