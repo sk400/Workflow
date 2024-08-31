@@ -11,12 +11,14 @@ import {
   Image,
   IconButton,
   Icon,
+  Box,
+  Heading,
 } from "@chakra-ui/react";
 import { PiSignOut } from "react-icons/pi";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/workflow-logo.png";
 import { IoMenuOutline } from "react-icons/io5";
 
@@ -26,6 +28,7 @@ import CreateProject from "../features/projects/CreateProject";
 const Navbar = ({ onOpen, btnRef }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   return (
     <Flex
@@ -58,8 +61,32 @@ const Navbar = ({ onOpen, btnRef }) => {
       />
 
       {/* Search bar (all screens) */}
+      <Box
+        sx={{
+          display: pathname === "/" ? "none" : "block",
+        }}
+      >
+        <Searchbar />
+      </Box>
 
-      <Searchbar />
+      <Box sx={{ display: user ? "none" : "block" }}></Box>
+
+      {user && (
+        <Heading
+          sx={{
+            fontWeight: "thin",
+            fontSize: "32px",
+            textAlign: "center",
+            fontFamily: "open",
+            alignSelf: "start",
+            color: "gray.50",
+            mt: 5,
+            display: { base: "none", md: "block" },
+          }}
+        >
+          Hi {user?.name} 👋
+        </Heading>
+      )}
 
       <HStack alignItems="center" spacing={5}>
         {/* Create project */}

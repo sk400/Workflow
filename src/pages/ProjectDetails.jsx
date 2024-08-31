@@ -24,14 +24,14 @@ import Category from "../features/projects/Category";
 import Tasks from "../features/tasks/Tasks";
 import CreateCategory from "../features/projects/CreateCategory";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCategories, getLabels } from "../lib/functions";
 import { MdOutlineCheck } from "react-icons/md";
 import { DragDropContext } from "react-beautiful-dnd";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useGlobalState } from "../context";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
@@ -43,6 +43,7 @@ const ProjectDetails = () => {
     filteredCategories,
     selectedLabel,
     setSelectedLabel,
+    searchTerm,
   } = useGlobalState();
 
   const {
@@ -214,6 +215,31 @@ const ProjectDetails = () => {
     alert("Something went wrong. Please refresh the page.");
   }
 
+  useEffect(() => {
+    if (!searchTerm?.length) {
+      setFilteredCategories(null);
+      return;
+    }
+    if (!categories?.length) return;
+
+    const timeoutId = setTimeout(() => {
+      setFilteredCategories(() => {
+        return categories?.map((category) => {
+          return {
+            ...category,
+            tasks: category?.tasks?.filter(
+              (task) =>
+                task?.title?.includes(searchTerm) ||
+                task?.description?.includes(searchTerm)
+            ),
+          };
+        });
+      });
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, categories]);
+
   if (isPending) return <Loading />;
 
   if (!categories?.length) {
@@ -228,15 +254,6 @@ const ProjectDetails = () => {
 
   const filter = ({ completed, selectedLabel }) =>
     setFilteredCategories(() => {
-      console.log(
-        "label:",
-        selectedLabel,
-        "completed:",
-        completed,
-        "categories:",
-        categories
-      );
-
       return categories?.map((category) => {
         return {
           ...category,

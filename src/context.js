@@ -5,6 +5,7 @@ const App = createContext();
 export const Provider = ({ children }) => {
   const [filteredCategories, setFilteredCategories] = useState(null);
   const [selectedLabel, setSelectedLabel] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   return (
     <App.Provider
@@ -13,6 +14,8 @@ export const Provider = ({ children }) => {
         setFilteredCategories,
         selectedLabel,
         setSelectedLabel,
+        searchTerm,
+        setSearchTerm,
       }}
     >
       {children}

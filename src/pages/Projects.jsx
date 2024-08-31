@@ -106,6 +106,7 @@ const Projects = () => {
                 color: "gray.50",
                 mt: 7,
                 mb: 10,
+                display: { md: "none" },
               }}
             >
               Hi {user?.name} 👋
@@ -115,6 +116,7 @@ const Projects = () => {
             templateColumns="repeat(auto-fill, minmax(200px, 1fr))"
             spacing={4}
             width="100%"
+            sx={{ mt: { md: 5 } }}
           >
             {projects?.map((project) => (
               <Project item={project} key={project?.id} />
