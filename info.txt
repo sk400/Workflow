@@ -31,10 +31,9 @@ Next level Features
 Update
 --------------------
 
-- Bin tasks and projects (separate) and clear bin, update filtered category
-- Email and password authentication with forgot password 
-- Fix Heading with user
-- Merge to main branch
+
+
+
 
 
 - fonts
@@ -46,12 +45,13 @@ Update
 
 
 
+
 Next version
 ------------
 
 - Change colors of the UI (add a global state to customise the colors)
 - online status
-
+- link google account to the user who signed up using email
 - search on homepage
 - Add searchterm to filteration of tasks
 
@@ -166,6 +166,11 @@ d
 - Filteration update
 - Search tasks
 - remove searchbar from home
+- Bin tasks and projects (separate) and clear bin, update filtered category
+- Email and password authentication with forgot password 
+- Image upload (fast, feedback to user)
+- Responsiveness on mobile and small devices
+- Merge to main branch
 
 
 ideas

@@ -24,6 +24,7 @@ import { IoMenuOutline } from "react-icons/io5";
 
 import Searchbar from "./Searchbar";
 import CreateProject from "../features/projects/CreateProject";
+import UserButton from "./UserButton";
 
 const Navbar = ({ onOpen, btnRef }) => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -118,41 +119,7 @@ const Navbar = ({ onOpen, btnRef }) => {
           <Icon as={IoMenuOutline} w={8} h={8} />
         </IconButton>
         {/* User button */}
-        <Popover>
-          <PopoverTrigger>
-            <Avatar
-              name={user?.name}
-              src={user?.photo}
-              cursor={"pointer"}
-              sx={{
-                display: { base: "none", md: "block" },
-              }}
-            />
-          </PopoverTrigger>
-          <PopoverContent
-            sx={{
-              width: "150px",
-            }}
-          >
-            <PopoverArrow />
-
-            <PopoverBody>
-              <Button
-                leftIcon={<PiSignOut />}
-                variant="solid"
-                onClick={() => signOut(auth)}
-                sx={{
-                  bgColor: "white",
-                  _hover: {
-                    bgColor: "white",
-                  },
-                }}
-              >
-                Sign out
-              </Button>
-            </PopoverBody>
-          </PopoverContent>
-        </Popover>
+        <UserButton />
       </HStack>
     </Flex>
   );

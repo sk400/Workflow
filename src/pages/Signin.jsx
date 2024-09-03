@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Flex,
   Box,
@@ -7,16 +7,23 @@ import {
   Heading,
   Text,
   Input,
+  useToast,
 } from "@chakra-ui/react";
 
 import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup, sendPasswordResetEmail } from "firebase/auth";
 import { auth, provider } from "../firebase";
 import AuthNavbar from "../features/auth/components/AuthNavbar";
+import { signInWithEmail } from "../features/auth/authFunctions";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [userData, setUserData] = useState({
+    email: "",
+    password: "",
+  });
+  const toast = useToast();
 
   const signInWithGoogle = () => {
     signInWithPopup(auth, provider)
@@ -28,6 +35,51 @@ const Signup = () => {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const handleChange = (e) =>
+    setUserData((prev) => {
+      return { ...prev, [e.target.name]: e.target.value };
+    });
+
+  const handleClick = () => {
+    try {
+      signInWithEmail({
+        ...userData,
+        navigate,
+        toast,
+        setterFunc: setUserData,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleForgotPassword = () => {
+    try {
+      sendPasswordResetEmail(auth, userData.email)
+        .then(() => {
+          toast({
+            description: "Password reset email sent",
+            status: "success",
+            duration: 3000,
+            position: "top",
+            isClosable: true,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          toast({
+            description: error.message,
+            status: "error",
+            duration: 3000,
+            position: "top",
+            isClosable: true,
+          });
+        });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -74,6 +126,7 @@ const Signup = () => {
                 focusBorderColor="#17181E"
                 autoComplete="off"
                 borderRadius="18px"
+                onChange={handleChange}
               />
               <Input
                 name="password"
@@ -85,6 +138,7 @@ const Signup = () => {
                 focusBorderColor="#17181E"
                 autoComplete="off"
                 borderRadius="18px"
+                onChange={handleChange}
               />
             </Flex>
             <Text>or</Text>
@@ -124,12 +178,20 @@ const Signup = () => {
                 opacity: 0.8,
               },
             }}
+            onClick={handleClick}
           >
             Log in
           </Button>
           <Flex direction="column" width="100%" alignItems={"center"} gap={2}>
-            <HStack>
+            <Flex
+              sx={{
+                flexDirection: { base: "column", sm: "row" },
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
               <Text>Don't have an account?</Text>
+
               <Link
                 to="/sign-up"
                 style={{
@@ -139,8 +201,14 @@ const Signup = () => {
               >
                 Create account
               </Link>
-            </HStack>
-            <Text fontWeight="bold">Forgot password?</Text>
+            </Flex>
+            <Text
+              fontWeight="bold"
+              cursor={"pointer"}
+              onClick={handleForgotPassword}
+            >
+              Forgot password?
+            </Text>
           </Flex>
         </Flex>
       </Flex>

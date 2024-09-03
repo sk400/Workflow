@@ -23,6 +23,8 @@ import {
   WrapItem,
   TagLabel,
   TagRightIcon,
+  useToast,
+  Spinner,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { IoMdMore } from "react-icons/io";
@@ -43,6 +45,8 @@ const Task = ({ task, categoryId, index }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [taskData, setTaskData] = useState({ ...task });
   const { filteredCategories, setFilteredCategories } = useGlobalState();
+  const [loading, setLoading] = useState(false);
+  const toast = useToast();
 
   const queryClient = useQueryClient();
 
@@ -57,6 +61,7 @@ const Task = ({ task, categoryId, index }) => {
   });
 
   const uploadImage = (e) => {
+    setLoading(true);
     const file = e.target.files[0];
     const acceptedFormats = [
       "image/jpeg",
@@ -65,7 +70,15 @@ const Task = ({ task, categoryId, index }) => {
       "image/svg",
     ];
     if (!acceptedFormats.includes(file.type)) {
-      alert("Only image formats are accepted");
+      toast({
+        title: "Error",
+        description: "Only image formats are accepted",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+      setLoading(false);
       return;
     }
 
@@ -76,12 +89,23 @@ const Task = ({ task, categoryId, index }) => {
       uploadBytes(imageRef, file).then((snapshot) => {
         getDownloadURL(snapshot.ref).then((url) => {
           setTaskData((prev) => ({ ...prev, imageUrl: url }));
+
+          setLoading(false);
         });
       });
 
       console.log("File uploaded successfully");
     } catch (error) {
       console.log(error);
+      toast({
+        title: "Error",
+        description: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+      setLoading(false);
     }
   };
 
@@ -660,7 +684,16 @@ const Task = ({ task, categoryId, index }) => {
                   }}
                 >
                   <HStack>
-                    <Icon as={IoCloudUploadSharp} color="#a0aec0" w={6} h={6} />
+                    {loading ? (
+                      <Spinner size="sm" color="gray.200" />
+                    ) : (
+                      <Icon
+                        as={IoCloudUploadSharp}
+                        color="#a0aec0"
+                        w={6}
+                        h={6}
+                      />
+                    )}
                     <Text>Upload</Text>
                   </HStack>
                 </Flex>
@@ -672,6 +705,7 @@ const Task = ({ task, categoryId, index }) => {
                     width: "0px",
                     height: "0px",
                   }}
+                  disabled={loading}
                 />
               </label>
             </>

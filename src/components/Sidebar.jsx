@@ -36,6 +36,7 @@ import { signOut } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
+import UserButton from "./UserButton";
 
 const sidebarItemsData = [
   {
@@ -224,7 +225,7 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
             </Flex>
           </DrawerBody>
           <DrawerFooter>
-            <Popover>
+            {/* <Popover>
               <PopoverTrigger>
                 <Avatar
                   name={user?.name}
@@ -259,7 +260,8 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
                   </Button>
                 </PopoverBody>
               </PopoverContent>
-            </Popover>
+            </Popover> */}
+            <UserButton sidebar />
           </DrawerFooter>
         </DrawerContent>
       </Drawer>

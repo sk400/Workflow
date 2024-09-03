@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Flex,
   Box,
@@ -7,6 +7,7 @@ import {
   Heading,
   Text,
   Input,
+  useToast,
 } from "@chakra-ui/react";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -14,9 +15,15 @@ import { FcGoogle } from "react-icons/fc";
 import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import AuthNavbar from "../features/auth/components/AuthNavbar";
+import { signUpWithEmail } from "../features/auth/authFunctions";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const toast = useToast();
+  const [userData, setUserData] = useState({
+    email: "",
+    password: "",
+  });
 
   const signInWithGoogle = () => {
     signInWithPopup(auth, provider)
@@ -28,6 +35,19 @@ const Signup = () => {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const handleChange = (e) =>
+    setUserData((prev) => {
+      return { ...prev, [e.target.name]: e.target.value };
+    });
+
+  const handleClick = () => {
+    try {
+      signUpWithEmail({ ...userData, toast, setterFunc: setUserData });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -75,6 +95,7 @@ const Signup = () => {
                 focusBorderColor="#17181E"
                 autoComplete="off"
                 borderRadius="18px"
+                onChange={handleChange}
               />
               <Input
                 name="password"
@@ -86,6 +107,7 @@ const Signup = () => {
                 focusBorderColor="#17181E"
                 autoComplete="off"
                 borderRadius="18px"
+                onChange={handleChange}
               />
             </Flex>
             <Text>or</Text>
@@ -126,6 +148,7 @@ const Signup = () => {
                 opacity: 0.8,
               },
             }}
+            onClick={handleClick}
           >
             Create account
           </Button>

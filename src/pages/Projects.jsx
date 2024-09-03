@@ -104,10 +104,11 @@ const Projects = () => {
                 fontFamily: "open",
                 alignSelf: "start",
                 color: "gray.50",
-                mt: 7,
-                mb: 10,
+                mt: { sm: 7 },
+                mb: { base: 3, sm: 10 },
                 display: { md: "none" },
               }}
+              as="h1"
             >
               Hi {user?.name} 👋
             </Heading>
