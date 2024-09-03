@@ -1,14 +1,17 @@
 # Planner
+![Workflow](https://github.com/user-attachments/assets/480d86bc-7e1e-4914-bbd8-6ae01e0cef6a)
 
-![planner](https://github.com/user-attachments/assets/00d4bed1-98e5-40f5-aab2-2541c74a181b)
 
-Planner is a web-based task management application designed to help you organize and prioritize your tasks and projects. Built with React and Firebase, Planner provides a simple and intuitive way to manage your work and stay productive.
+Workflow is a web-based task management application designed to help you organize and prioritize your tasks and projects. Built with React and Firebase, Planner provides a simple and intuitive way to manage your work and stay productive.
 
 ## Features
 
-- Create and manage tasks and projects
-- User authentication with Google sign-in 
+- Create, organise and manage tasks and projects
+- Users can sign in using their email or Google account
+- Organise tasks by categories and drag and drop between categories
+- Search and filter tasks by adding custom labels
 - Real-time data synchronization with Firebase
+- Add tasks to Bin
 - Enjoy a visually appealing and responsive design powered by Chakra UI
 
 ## Technologies Used
@@ -16,8 +19,10 @@ Planner is a web-based task management application designed to help you organize
 - React.js
 - Chakra UI
 - React router dom
+- React query
 - Firebase Authentication
 - Firebase Firestore
+- React beautiful DnD
 
 ## Getting Started
 
