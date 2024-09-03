@@ -177,21 +177,23 @@ const Project = ({ item }) => {
                 border: "none",
               }}
             >
-              <MenuItem
-                sx={{
-                  color: "gray.50",
-                  bgColor: "#272A30",
-                  _hover: {
-                    bgColor: "#7259C6",
-                  },
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpen();
-                }}
-              >
-                Edit
-              </MenuItem>
+              {pathname === "/" && (
+                <MenuItem
+                  sx={{
+                    color: "gray.50",
+                    bgColor: "#272A30",
+                    _hover: {
+                      bgColor: "#7259C6",
+                    },
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpen();
+                  }}
+                >
+                  Edit
+                </MenuItem>
+              )}
               <MenuItem
                 sx={{
                   color: "gray.50",

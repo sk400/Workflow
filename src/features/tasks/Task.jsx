@@ -44,8 +44,6 @@ const Task = ({ task, categoryId, index }) => {
   const [taskData, setTaskData] = useState({ ...task });
   const { filteredCategories, setFilteredCategories } = useGlobalState();
 
-  // Title, Description, Deadline, Label, Image, isCompleted, isDeleted
-
   const queryClient = useQueryClient();
 
   const { data: label } = useQuery({
@@ -91,7 +89,7 @@ const Task = ({ task, categoryId, index }) => {
     setTaskData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleEdit = async () => {
+  const handleEdit = async (data) => {
     if (
       !taskData?.title?.length ||
       !taskData?.description?.length ||
@@ -120,10 +118,12 @@ const Task = ({ task, categoryId, index }) => {
 
       const array = [...categoryData?.tasks];
 
+      const taskInfo = data || taskData;
+
       const updatedArray = array?.map((item) => {
         if (item?.id === task?.id) {
           return {
-            ...taskData,
+            ...taskInfo,
           };
         }
         return item;
@@ -174,46 +174,11 @@ const Task = ({ task, categoryId, index }) => {
       console.log(error);
     }
   };
-  // Temporary. It will be changed to "Add to bin"
-
-  const handleDelete = async () => {
-    if (!user || !task?.id) {
-      return;
-    }
-
-    try {
-      const categoryRef = doc(
-        db,
-        "users",
-        user?.email,
-        "projects",
-        projectId,
-        "categories",
-        categoryId
-      );
-
-      const project = await getDoc(categoryRef);
-
-      const projectData = project.data();
-
-      const array = [...projectData?.tasks];
-
-      const filteredArray = array?.filter((item) => item?.id !== task?.id);
-
-      await updateDoc(categoryRef, {
-        tasks: filteredArray,
-      });
-
-      console.log("Task deleted successfully");
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   // Edit mutation
 
   const editMutation = useMutation({
-    mutationFn: handleEdit,
+    mutationFn: (data) => handleEdit(data),
     onMutate: () => {
       queryClient.cancelQueries(["categories", projectId]);
 
@@ -275,15 +240,76 @@ const Task = ({ task, categoryId, index }) => {
     },
     onSettled: () => {
       queryClient.invalidateQueries(["categories", projectId]);
-      queryClient.invalidateQueries(["label", task?.label?.ref?.id]);
+      queryClient.invalidateQueries(["label", task?.label?.id]);
     },
   });
 
   // Delete mutation
 
   const deleteMutation = useMutation({
-    mutationFn: handleDelete,
-    onSuccess: () => {
+    mutationFn: (data) => handleEdit(data),
+    onMutate: () => {
+      queryClient.cancelQueries(["categories", projectId]);
+
+      const previousCategories = queryClient.getQueryData([
+        "categories",
+        projectId,
+      ]);
+
+      if (filteredCategories?.length) {
+        setFilteredCategories((prevCategories) => {
+          return prevCategories?.map((category) => {
+            if (category.id === categoryId) {
+              return {
+                ...category,
+                tasks: category?.tasks?.map((item) => {
+                  if (item?.id === task?.id) {
+                    return {
+                      ...taskData,
+                      isDeleted: task?.isDeleted === true ? false : true,
+                    };
+                  }
+                  return item;
+                }),
+              };
+            }
+
+            return category;
+          });
+        });
+      }
+
+      queryClient.setQueryData(["categories", projectId], (oldCategories) => {
+        const updatedCategories = oldCategories?.map((category) => {
+          if (category?.id === categoryId) {
+            return {
+              ...category,
+              tasks: category?.tasks?.map((item) => {
+                if (task?.id === item?.id) {
+                  return {
+                    ...taskData,
+                    isDeleted: task?.isDeleted === true ? false : true,
+                  };
+                }
+                return item;
+              }),
+            };
+          }
+          return category;
+        });
+
+        return updatedCategories;
+      });
+
+      return { previousCategories };
+    },
+    onError: (context) => {
+      queryClient.setQueryData(
+        ["categories", projectId],
+        context?.previousCategories
+      );
+    },
+    onSettled: () => {
       queryClient.invalidateQueries(["categories", projectId]);
     },
   });
@@ -484,7 +510,10 @@ const Task = ({ task, categoryId, index }) => {
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    deleteMutation.mutate();
+                    deleteMutation.mutate({
+                      ...taskData,
+                      isDeleted: task?.isDeleted === true ? false : true,
+                    });
                   }}
                 >
                   Add to bin
@@ -649,11 +678,11 @@ const Task = ({ task, categoryId, index }) => {
           )}
 
           <Wrap>
-            {labels?.map((label) => (
-              <WrapItem key={label?.id}>
+            {labels?.map((item) => (
+              <WrapItem key={item?.id}>
                 <Tag
                   sx={{
-                    bgColor: label?.background,
+                    bgColor: item?.background,
                     color: "gray.100",
                     cursor: "pointer",
                   }}
@@ -661,12 +690,12 @@ const Task = ({ task, categoryId, index }) => {
                   onClick={() =>
                     setTaskData((prev) => ({
                       ...prev,
-                      label: createLabelReference(label?.id),
+                      label: createLabelReference({ id: item?.id, user }),
                     }))
                   }
                 >
-                  <TagLabel> {label.name}</TagLabel>
-                  {taskData?.label?.id === label?.id && (
+                  <TagLabel> {item.name}</TagLabel>
+                  {taskData?.label?.id === item?.id && (
                     <TagRightIcon as={MdOutlineCheck} color="gray.100" />
                   )}
                 </Tag>

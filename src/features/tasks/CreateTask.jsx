@@ -114,7 +114,7 @@ const CreateTask = ({ categoryId, setShow }) => {
       };
       setShow(false);
       await updateDoc(categoryRef, {
-        tasks: [...categoryData?.tasks, newTask],
+        tasks: [...categoryData?.tasks, { ...newTask, projectId, categoryId }],
       });
 
       setTaskData({

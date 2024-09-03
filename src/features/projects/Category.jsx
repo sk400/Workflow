@@ -28,7 +28,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import CreateTask from "../tasks/CreateTask";
 import { DeleteModal } from "../../components";
 
-const Category = ({ category }) => {
+const Category = ({ category, taskNo }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const { projectId } = useParams();
   const [categoryName, setCategoryName] = useState(category?.name);
@@ -195,7 +195,7 @@ const Category = ({ category }) => {
               }}
             >
               <Text fontSize="12px" fontWeight="semibold">
-                {category?.tasks?.length}
+                {taskNo}
               </Text>
             </Center>
             <Image

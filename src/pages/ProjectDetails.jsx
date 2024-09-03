@@ -184,13 +184,16 @@ const ProjectDetails = () => {
           (task, index) => index !== source.index
         );
 
+        // Update the categoryId of the task
+
+        const removedTask = {
+          ...sourceCategory.tasks[source.index],
+          categoryId: destinationCategory.id,
+        };
+
         // Add the task to the destination index in the destination category
         const destinationTasks = destinationCategory.tasks;
-        destinationTasks.splice(
-          destination.index,
-          0,
-          sourceCategory.tasks[source.index]
-        );
+        destinationTasks.splice(destination.index, 0, removedTask);
 
         moveTask({
           sourceTasks,
@@ -441,14 +444,23 @@ const ProjectDetails = () => {
           </Flex>
 
           <Wrap spacing={["10px", "40px"]}>
-            {pageData?.map((category) => (
-              <WrapItem key={category?.id}>
-                <Box>
-                  <Category category={category} />
-                  <Tasks tasks={category?.tasks} categoryId={category?.id} />
-                </Box>
-              </WrapItem>
-            ))}
+            {pageData?.map((category) => {
+              const filteredTasks = category?.tasks?.filter(
+                (task) => task?.isDeleted === false
+              );
+
+              return (
+                <WrapItem key={category?.id}>
+                  <Box>
+                    <Category
+                      category={category}
+                      taskNo={filteredTasks?.length}
+                    />
+                    <Tasks tasks={filteredTasks} categoryId={category?.id} />
+                  </Box>
+                </WrapItem>
+              );
+            })}
           </Wrap>
 
           {/* Category columns */}

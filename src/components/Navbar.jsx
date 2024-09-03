@@ -63,7 +63,10 @@ const Navbar = ({ onOpen, btnRef }) => {
       {/* Search bar (all screens) */}
       <Box
         sx={{
-          display: pathname === "/" ? "none" : "block",
+          display:
+            pathname === "/" || pathname === "/labels" || pathname === "/bin"
+              ? "none"
+              : "block",
         }}
       >
         <Searchbar />
@@ -71,22 +74,28 @@ const Navbar = ({ onOpen, btnRef }) => {
 
       <Box sx={{ display: user ? "none" : "block" }}></Box>
 
-      {user && (
-        <Heading
-          sx={{
-            fontWeight: "thin",
-            fontSize: "32px",
-            textAlign: "center",
-            fontFamily: "open",
-            alignSelf: "start",
-            color: "gray.50",
-            mt: 5,
-            display: { base: "none", md: "block" },
-          }}
-        >
-          Hi {user?.name} 👋
-        </Heading>
-      )}
+      <Box
+        sx={{
+          display: pathname.includes("/projects") ? "none" : "block",
+        }}
+      >
+        {user && (
+          <Heading
+            sx={{
+              fontWeight: "thin",
+              fontSize: "32px",
+              textAlign: "center",
+              fontFamily: "open",
+              alignSelf: "start",
+              color: "gray.50",
+              mt: 5,
+              display: { base: "none", md: "block" },
+            }}
+          >
+            Hi {user?.name} 👋
+          </Heading>
+        )}
+      </Box>
 
       <HStack alignItems="center" spacing={5}>
         {/* Create project */}

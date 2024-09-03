@@ -31,27 +31,17 @@ Next level Features
 Update
 --------------------
 
-
-
-
-
-
-
-
-
-
-- Search tasks
-- remove searchbar from home
-
 - Bin tasks and projects (separate) and clear bin, update filtered category
 - Email and password authentication with forgot password 
-- user button to in small sidebar
-
+- Fix Heading with user
+- Merge to main branch
 
 
 - fonts
 - Remove unused code
-- Merge to main branch
+- Refactor
+- remove unused packages
+
 
 
 
@@ -61,7 +51,7 @@ Next version
 
 - Change colors of the UI (add a global state to customise the colors)
 - online status
-- remove unused packages
+
 - search on homepage
 - Add searchterm to filteration of tasks
 
@@ -174,6 +164,9 @@ d
 - change selectedLabels from createTask and task
 - complete tasks filter for tasks
 - Filteration update
+- Search tasks
+- remove searchbar from home
+
 
 ideas
 --------
