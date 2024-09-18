@@ -15,12 +15,6 @@ import {
   Spacer,
   DrawerCloseButton,
   DrawerFooter,
-  Popover,
-  Avatar,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  Button,
 } from "@chakra-ui/react";
 
 import CreateProject from "../features/projects/CreateProject";
@@ -31,9 +25,8 @@ import { FaTasks } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { GoProjectRoadmap } from "react-icons/go";
 import logo from "../assets/workflow-logo.png";
-import { PiSignOut } from "react-icons/pi";
-import { signOut } from "firebase/auth";
-import { auth, db } from "../firebase";
+
+import { db } from "../firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
 import UserButton from "./UserButton";
@@ -225,42 +218,6 @@ const Sidebar = ({ isOpen, btnRef, onClose }) => {
             </Flex>
           </DrawerBody>
           <DrawerFooter>
-            {/* <Popover>
-              <PopoverTrigger>
-                <Avatar
-                  name={user?.name}
-                  src={user?.photo}
-                  cursor={"pointer"}
-                  boxSize={"30px"}
-                />
-              </PopoverTrigger>
-              <PopoverContent
-                sx={{
-                  width: "150px",
-                  bgColor: "#272A30",
-                  color: "gray.50",
-                  border: "none",
-                }}
-              >
-                <PopoverBody>
-                  <Button
-                    leftIcon={<PiSignOut />}
-                    variant="solid"
-                    onClick={() => signOut(auth)}
-                    sx={{
-                      bgColor: "#272A30",
-                      color: "gray.50",
-                      _hover: {
-                        bgColor: "#272A30",
-                        opacity: "0.8",
-                      },
-                    }}
-                  >
-                    Sign out
-                  </Button>
-                </PopoverBody>
-              </PopoverContent>
-            </Popover> */}
             <UserButton sidebar />
           </DrawerFooter>
         </DrawerContent>

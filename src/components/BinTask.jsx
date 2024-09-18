@@ -29,8 +29,6 @@ const BinTask = ({ task }) => {
   const categoryId = task?.categoryId;
   const queryClient = useQueryClient();
 
-  // Update the categoryId on dragEND
-
   const restoreTask = async () => {
     try {
       const categoryRef = doc(

@@ -9,10 +9,6 @@ import {
   MenuItem,
   MenuList,
   Text,
-  Modal,
-  Button,
-  ModalContent,
-  ModalOverlay,
   useDisclosure,
   Spacer,
 } from "@chakra-ui/react";

@@ -7,17 +7,12 @@ import {
   MenuList,
   MenuItem,
   useDisclosure,
-  Flex,
-  Button,
-  Text,
-  ModalContent,
-  ModalOverlay,
 } from "@chakra-ui/react";
-import { collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { IoMdMore } from "react-icons/io";
 import { db } from "../../firebase";
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import CommonLabelModal from "./CommonLabelModal";
 import { DeleteModal } from "../../components";
 

@@ -93,8 +93,6 @@ export const clearBinTasks = async (binTasks) => {
       return;
     }
 
-    const batch = writeBatch(db);
-
     binTasks?.forEach(async (task) => {
       // find the category in firestore
 

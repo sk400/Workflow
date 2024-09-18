@@ -1,22 +1,12 @@
 import {
-  Avatar,
   Flex,
   HStack,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  Button,
-  PopoverArrow,
   Image,
   IconButton,
   Icon,
   Box,
   Heading,
 } from "@chakra-ui/react";
-import { PiSignOut } from "react-icons/pi";
-import { signOut } from "firebase/auth";
-import { auth } from "../firebase";
 
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/workflow-logo.png";

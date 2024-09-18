@@ -16,29 +16,12 @@ Share on linkedin
 
 
 
-
-
-Next level Features
---------------------
-- hide navbar on scroll
-- notfound page
-- Archived projects
-- Drag and drop the project cards between priority columns
-- Error boundary
-
-
-
 Update
 --------------------
 
 
-
-
-
-- Clear bin
-- favicon
 - fonts
-- Remove unused code
+
 - Refactor
 - remove unused packages
 
@@ -56,7 +39,7 @@ Next version
 - search on homepage
 - Add searchterm to filteration of tasks
 - Delete a single project or task from bin
-
+- Error boundary
 
 
 
@@ -120,7 +103,7 @@ implement react query
 
 - CRUD on projects
 
-r *
+r 
 c
 u
 d
@@ -156,7 +139,7 @@ d
   - c
   - r
   - color customization of label
-  - u*
+  - u
   - d
 
 - add labels to createTask 
@@ -173,6 +156,9 @@ d
 - Image upload (fast, feedback to user)
 - Responsiveness on mobile and small devices
 - Merge to main branch
+- Clear bin
+- favicon
+- Remove unused code
 
 
 ideas
