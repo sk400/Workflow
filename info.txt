@@ -35,7 +35,8 @@ Update
 
 
 
-
+- Clear bin
+- favicon
 - fonts
 - Remove unused code
 - Refactor
@@ -54,6 +55,7 @@ Next version
 - link google account to the user who signed up using email
 - search on homepage
 - Add searchterm to filteration of tasks
+- Delete a single project or task from bin
 
 
 

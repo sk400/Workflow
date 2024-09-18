@@ -117,8 +117,6 @@ const Project = ({ item }) => {
     },
   });
 
-  // remove edit option in bin page
-
   return (
     <>
       <Card

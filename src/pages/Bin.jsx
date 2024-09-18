@@ -9,18 +9,26 @@ import {
   Text,
   Wrap,
   WrapItem,
+  IconButton,
+  Icon,
+  useDisclosure,
 } from "@chakra-ui/react";
-import React from "react";
 import Project from "../features/projects/Project";
-import { BinTask, Loading } from "../components";
-import { useQueries, useQuery } from "@tanstack/react-query";
-import { getCategories, getProjects } from "../lib/functions";
-import { collection, doc, getDocs, orderBy, query } from "firebase/firestore";
-import { db } from "../firebase";
-import Task from "../features/tasks/Task";
+import { BinTask, DeleteModal, Loading } from "../components";
+import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  clearBinProjects,
+  clearBinTasks,
+  getCategories,
+  getProjects,
+} from "../lib/functions";
+import { MdDelete } from "react-icons/md";
+import { useState } from "react";
 
 const Bin = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [dataType, setDataType] = useState("projects");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const queryClient = useQueryClient();
 
   const { data: projects, isPending } = useQuery({
     queryKey: ["bin", "projects"],
@@ -70,14 +78,60 @@ const Bin = () => {
 
   const deletedTasks = tasks?.filter((task) => task?.isDeleted === true);
 
+  const clearTasks = () => {
+    deletedTasks?.forEach((task) => {
+      const projectId = task?.projectId;
+      const categoryId = task?.categoryId;
+
+      queryClient.setQueryData(["categories", projectId], (oldCategories) => {
+        const updatedCategories = oldCategories?.map((category) => {
+          if (category?.id === categoryId) {
+            return {
+              ...category,
+              tasks: category?.tasks?.filter((item) => item?.id !== task?.id),
+            };
+          }
+          return category;
+        });
+
+        return updatedCategories;
+      });
+    });
+
+    clearBinTasks(deletedTasks);
+  };
+
+  const clearProjects = () => {
+    queryClient.setQueryData(["bin", "projects"], (old) => []);
+    clearBinProjects();
+  };
+
+  const decideDisplayProperty = () => {
+    if (dataType === "projects") {
+      return projects?.length === 0 ? "none" : "block";
+    } else if (dataType === "tasks") {
+      return deletedTasks?.length === 0 ? "none" : "block";
+    }
+  };
+
   if (isPending) return <Loading />;
 
   return (
     <>
       <Tabs variant="solid-rounded">
         <TabList>
-          <Tab _selected={{ color: "gray.100", bg: "#7259C6" }}>Projects</Tab>
-          <Tab _selected={{ color: "gray.100", bg: "#7259C6" }}>Tasks</Tab>
+          <Tab
+            _selected={{ color: "gray.100", bg: "#7259C6" }}
+            onClick={() => setDataType("projects")}
+          >
+            Projects
+          </Tab>
+          <Tab
+            _selected={{ color: "gray.100", bg: "#7259C6" }}
+            onClick={() => setDataType("tasks")}
+          >
+            Tasks
+          </Tab>
         </TabList>
         <TabPanels>
           <TabPanel pt={10}>
@@ -122,6 +176,38 @@ const Bin = () => {
           </TabPanel>
         </TabPanels>
       </Tabs>
+      <IconButton
+        icon={<Icon w={6} h={6} as={MdDelete} />}
+        aria-label="Delete"
+        variant="ghost"
+        size="sm"
+        color="gray.100"
+        onClick={onOpen}
+        sx={{
+          position: "fixed",
+          bottom: "50px",
+          right: "50px",
+          zIndex: "10",
+          bgColor: "#7259C6",
+          borderRadius: "full",
+          width: "40px",
+          height: "40px",
+          display: decideDisplayProperty(),
+
+          _hover: {
+            opacity: 0.8,
+          },
+        }}
+      />
+
+      <DeleteModal
+        isOpen1={isOpen}
+        onClose1={onClose}
+        text={`Are you sure you want to delete ${dataType} permanently?`}
+        handleClick={() => {
+          return dataType === "projects" ? clearProjects() : clearTasks();
+        }}
+      />
     </>
   );
 };

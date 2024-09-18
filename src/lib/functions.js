@@ -1,9 +1,13 @@
 import {
   collection,
+  doc,
   getDoc,
   getDocs,
   orderBy,
   query,
+  updateDoc,
+  where,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -62,5 +66,64 @@ export const fetchLabel = async (reference) => {
     return label.data();
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const clearBinProjects = async () => {
+  try {
+    const q = query(
+      collection(db, "users", user?.email, "projects"),
+      where("isDeleted", "==", true)
+    );
+    const querySnapshot = await getDocs(q);
+    const batch = writeBatch(db);
+    querySnapshot.docs.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+    await batch.commit();
+    console.log("Bin projects are deleted successfully");
+  } catch (error) {
+    console.error("Error clearing bin: ", error);
+  }
+};
+
+export const clearBinTasks = async (binTasks) => {
+  try {
+    if (!binTasks?.length) {
+      return;
+    }
+
+    const batch = writeBatch(db);
+
+    binTasks?.forEach(async (task) => {
+      // find the category in firestore
+
+      const categoryRef = doc(
+        db,
+        "users",
+        user?.email,
+        "projects",
+        task?.projectId,
+        "categories",
+        task?.categoryId
+      );
+
+      const categorySnap = await getDoc(categoryRef);
+      const categoryData = categorySnap.data();
+
+      // Remove the task from the category
+      const updatedTasks = categoryData?.tasks?.filter(
+        (t) => t?.id !== task?.id
+      );
+
+      // Save the update the category
+      await updateDoc(categoryRef, {
+        tasks: updatedTasks,
+      });
+    });
+
+    console.log("Bin tasks are deleted successfully");
+  } catch (error) {
+    console.error("Error clearing bin: ", error);
   }
 };
